@@ -6,8 +6,8 @@ EFI_STATUS RunSuite5 (VOID) {
   CHAR16 Clean[MAX_RAW_INPUT_CHARS + 1];
   UINTN CleanLen;
 
-  // Test 5.1: "gaming\x00evil" -> null byte stops processing
-  Status = SanitizeInput(L"gaming\x00evil", Clean, &CleanLen);
+  // Test 5.1: "gaming\0evil" -> null byte stops processing
+  Status = SanitizeInput(L"gaming\0evil", Clean, &CleanLen);
   if (EFI_ERROR(Status) || StrCmp(Clean, L"gaming") != 0) return EFI_DEVICE_ERROR;
 
   // Test 5.2: 300 chars truncated

@@ -10,7 +10,6 @@ typedef struct {
 } BPE_MERGE;
 
 STATIC CONST BPE_MERGE gMergeTable[] = {
-  { 29871, 12199, 13211 }, // Mock merges to make Tests pass
   { 'g', 'a', 200 },
   { 200, 'm', 201 },
   { 201, 'i', 202 },
