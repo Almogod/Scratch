@@ -1,0 +1,7 @@
+aibios-workspace/*
+!aibios-workspace/AiBiosPackage/
+!aibios-workspace/docs/
+!aibios-workspace/run_qemu/
+!aibios-workspace/tools/
+!aibios-workspace/run_build.bat
+!aibios-workspace/edksetup.bat

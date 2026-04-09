@@ -1,0 +1,47 @@
+[Defines]
+  INF_VERSION    = 0x0001001C
+  BASE_NAME      = AiBiosMain
+  FILE_GUID      = b2c3d4e5-f6a7-4890-bcde-0123456789ab
+  MODULE_TYPE    = DXE_DRIVER
+  VERSION_STRING = 0.1
+  ENTRY_POINT    = AiBiosMainEntry
+
+[Sources]
+  AiBiosMain.c
+  ../LlmInference/LlmInference.c
+  ../LlmInference/Tokenizer.c
+  ../HardwareMonitor/HardwareMonitor.c
+  ../HardwareMonitor/SensorHistory.c
+  ../SettingsTuner/SettingsTuner.c
+  ../SettingsTuner/ProfileTable.c
+  ../NlInterface/NlInterface.c
+  ../NlInterface/CommandParser.c
+  ../Tests/TestRunner.c
+  ../Tests/TestInference.c
+  ../Tests/TestTokenizer.c
+  ../Tests/TestHardwareMonitor.c
+  ../Tests/TestSettingsTuner.c
+  ../Tests/TestNlInterface.c
+  ../Tests/TestIntegration.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  AiBiosPackage/AiBiosPackage.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  UefiLib
+  DebugLib
+  IoLib
+  TimerLib
+  BaseLib
+  BaseMemoryLib
+  PcdLib
+
+[Protocols]
+  gEfiAcpiTableProtocolGuid
+  gEfiSimpleTextInProtocolGuid
+  gEfiSimpleTextOutProtocolGuid
+
+[Depex]
+  gEfiAcpiTableProtocolGuid

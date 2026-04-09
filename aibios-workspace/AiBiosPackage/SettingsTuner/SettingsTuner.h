@@ -1,0 +1,44 @@
+#ifndef AIBIOS_SETTINGS_TUNER_H
+#define AIBIOS_SETTINGS_TUNER_H
+
+#include <Uefi.h>
+
+typedef enum {
+  INTENT_GAMING       = 0,
+  INTENT_ECO          = 1,
+  INTENT_SILENT       = 2,
+  INTENT_VIDEO_EDIT   = 3,
+  INTENT_BATTERY      = 4,
+  INTENT_DIAGNOSTIC   = 5,
+  INTENT_UNKNOWN      = 6
+} USER_INTENT;
+
+typedef struct {
+  USER_INTENT   Intent;
+  UINT8         CpuMaxMultiplier;
+  UINT8         CpuVoltageOffset;
+  UINT16        MemoryClockMHz;
+  UINT8         FanCurveId;
+  UINT32        TdpWatts;
+  BOOLEAN       XmpEnabled;
+} TUNING_PROFILE;
+
+EFI_STATUS
+ApplyProfile (
+  IN USER_INTENT Intent
+  );
+
+
+EFI_STATUS
+SafeWriteMsr (
+  IN UINT32  MsrAddress,
+  IN UINT64  Value
+  );
+
+EFI_STATUS
+GetProfileByIntent (
+  IN  USER_INTENT      Intent,
+  OUT TUNING_PROFILE   **Profile
+  );
+
+#endif // AIBIOS_SETTINGS_TUNER_H

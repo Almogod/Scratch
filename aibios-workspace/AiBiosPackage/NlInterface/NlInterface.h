@@ -1,0 +1,15 @@
+#ifndef AIBIOS_NL_INTERFACE_H
+#define AIBIOS_NL_INTERFACE_H
+
+#include <Uefi.h>
+
+#define MAX_RAW_INPUT_CHARS   256
+
+EFI_STATUS
+SanitizeInput (
+  IN  CONST CHAR16  *RawInput,
+  OUT CHAR16        *CleanInput,
+  OUT UINTN         *CleanLen
+  );
+
+#endif // AIBIOS_NL_INTERFACE_H
