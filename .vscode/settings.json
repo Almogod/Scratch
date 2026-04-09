@@ -1,5 +1,10 @@
 {
     "git.ignoredRepositories": [
-        "aibios-workspace"
-    ]
+        "**/aibios-workspace/**",
+        "**/brotli/**",
+        "**/libfdt/**",
+        "**/mipisyst/**"
+    ],
+    "git.autoRepositoryDetection": false,
+    "git.detectSubmodules": false
 }
