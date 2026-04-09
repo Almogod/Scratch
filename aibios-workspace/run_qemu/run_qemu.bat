@@ -6,11 +6,15 @@ echo ==============================================
 :: Check if QEMU is installed
 where qemu-system-x86_64 >nul 2>nul
 if %ERRORLEVEL% neq 0 (
-    echo [ERROR] qemu-system-x86_64 is not found in PATH!
-    echo Please install QEMU. You can use winget from an administrator prompt:
-    echo winget install SoftwareFreedomConservancy.QEMU
-    pause
-    exit /b 1
+    if exist "C:\Program Files\qemu\qemu-system-x86_64.exe" (
+        set "PATH=C:\Program Files\qemu;%PATH%"
+    ) else (
+        echo [ERROR] qemu-system-x86_64 is not found in PATH!
+        echo Please install QEMU. You can use winget from an administrator prompt:
+        echo winget install SoftwareFreedomConservancy.QEMU
+        pause
+        exit /b 1
+    )
 )
 
 :: Find OVMF.fd provided natively by the QEMU installation

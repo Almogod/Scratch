@@ -32,4 +32,14 @@ PollSensors (
   OUT SENSOR_SAMPLE  *Latest
   );
 
+COMPONENT_HEALTH
+AnalyzeFanHealth (
+  IN CONST SENSOR_RING  *History
+  );
+
+COMPONENT_HEALTH
+AnalyzeSsdHealth (
+  IN CONST SENSOR_SAMPLE *Latest
+  );
+
 #endif // AIBIOS_HARDWARE_MONITOR_H
