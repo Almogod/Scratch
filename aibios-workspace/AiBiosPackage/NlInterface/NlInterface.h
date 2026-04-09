@@ -12,4 +12,10 @@ SanitizeInput (
   OUT UINTN         *CleanLen
   );
 
+EFI_STATUS
+GetTextInput (
+  OUT CHAR16        *Buffer,
+  IN  UINTN         MaxLength
+  );
+
 #endif // AIBIOS_NL_INTERFACE_H

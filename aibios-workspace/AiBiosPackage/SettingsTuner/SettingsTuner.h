@@ -10,7 +10,8 @@ typedef enum {
   INTENT_VIDEO_EDIT   = 3,
   INTENT_BATTERY      = 4,
   INTENT_DIAGNOSTIC   = 5,
-  INTENT_UNKNOWN      = 6
+  INTENT_UNKNOWN      = 6,
+  INTENT_STATUS_REPORT = 7
 } USER_INTENT;
 
 typedef struct {

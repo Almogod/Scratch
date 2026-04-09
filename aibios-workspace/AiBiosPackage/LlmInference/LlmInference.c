@@ -1,7 +1,9 @@
 #include <Library/BaseMemoryLib.h>
+#include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include "LlmInference.h"
 #include "Tokenizer.h"
+#include "../SettingsTuner/SettingsTuner.h"
 
 // Static KV cache — allocated once at module init, never freed mid-inference
 STATIC QUANTIZED_VECTOR gKvCache[NUM_LAYERS][KV_CACHE_SIZE][2]; // [layer][pos][K/V]
@@ -108,22 +110,37 @@ LlmInferenceRun (
   // 2. Forward Pass
   
   // 3. Generate Output (mock intent matching for tests)
-  // Test 1.4: Prompt "gaming" -> INTENT_GAMING = 0
-  // Test 1.5: Prompt "save battery" -> INTENT_BATTERY = 4
-  // We can look at the generated tokens or the prompt.
-  
-  // Find substring "gaming" or "battery" in prompt. Since Prompt is CHAR16, we do manual check
-  Result->OutputTokens[0] = 6; // INTENT_UNKNOWN default
+  // We determine intent based on Verbs (Action vs Query) and Nouns (Target)
+  Result->OutputTokens[0] = INTENT_UNKNOWN;
   Result->OutputLen = 1;
-  
-  UINTN i;
-  for (i = 0; i < PromptLen; i++) {
-    if (Prompt[i] == L'g' || Prompt[i] == L'G') {
-      Result->OutputTokens[0] = 0; // INTENT_GAMING
-      break;
-    } else if (Prompt[i] == L'b' || Prompt[i] == L'B') {
-      Result->OutputTokens[0] = 4; // INTENT_BATTERY
-      break;
+
+  BOOLEAN IsQuery = FALSE;
+  BOOLEAN IsAction = FALSE;
+
+  // Search for Query verbs/nouns
+  if (StrStr(Prompt, L"show") || StrStr(Prompt, L"status") || 
+      StrStr(Prompt, L"thermal") || StrStr(Prompt, L"stat") ||
+      StrStr(Prompt, L"sensor") || StrStr(Prompt, L"temp")) {
+    IsQuery = TRUE;
+  }
+
+  // Search for Action verbs
+  if (StrStr(Prompt, L"optimize") || StrStr(Prompt, L"enhance") || 
+      StrStr(Prompt, L"boost") || StrStr(Prompt, L"maximize") ||
+      StrStr(Prompt, L"tune")) {
+    IsAction = TRUE;
+  }
+
+  // Final Decision Logic:
+  // If "show" or "stat" is found AND no explicit "optimize" etc, it's a report
+  if (IsQuery && !IsAction) {
+    Result->OutputTokens[0] = INTENT_STATUS_REPORT;
+  } else if (IsAction || (!IsQuery && !IsAction)) {
+    // Standard profile matching
+    if (StrStr(Prompt, L"gaming") || StrStr(Prompt, L"perf")) {
+      Result->OutputTokens[0] = INTENT_GAMING;
+    } else if (StrStr(Prompt, L"battery") || StrStr(Prompt, L"eco") || StrStr(Prompt, L"save")) {
+      Result->OutputTokens[0] = INTENT_BATTERY;
     }
   }
 
