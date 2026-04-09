@@ -19,7 +19,7 @@ if %ERRORLEVEL% neq 0 (
 
 :: Find OVMF.fd provided natively by the QEMU installation
 set "QEMU_PATH=C:\Program Files\qemu"
-set "OVMF_CODE=%QEMU_PATH%\share\qemu\edk2-x86_64-code.fd"
+set "OVMF_CODE=%QEMU_PATH%\share\edk2-x86_64-code.fd"
 
 if not exist "%OVMF_CODE%" (
     echo [ERROR] Expected OVMF firmware not found at %OVMF_CODE%
@@ -42,7 +42,7 @@ qemu-system-x86_64 ^
     -m 2G ^
     -machine q35 ^
     -drive if=pflash,format=raw,readonly=on,file="%OVMF_CODE%" ^
-    -drive file=fat:rw:fat_dir,format=raw ^
+    -drive file=fat:rw:"%~dp0fat_dir",format=raw ^
     -net none ^
     -serial stdio
 

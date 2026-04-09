@@ -9,12 +9,10 @@
   SKUID_IDENTIFIER         = DEFAULT
 
 [BuildOptions]
-  GCC:*_GCC5_X64_CC_FLAGS = -O2 -fno-stack-protector -mno-red-zone
+  GCC:*_*_X64_CC_FLAGS = -fno-stack-protector -mno-red-zone
   MSFT:*_*_X64_CC_FLAGS = /O2 /GS- /D MDE_CPU_X64
-  GCC:*_CLANGDWARF_X64_CC_FLAGS = -O2 -fno-stack-protector -mno-red-zone
 !if $(RUN_TESTS) == TRUE
-  GCC:*_GCC5_X64_CC_FLAGS = -O2 -fno-stack-protector -mno-red-zone -D RUN_TESTS=1
-  GCC:*_CLANGDWARF_X64_CC_FLAGS = -O2 -fno-stack-protector -mno-red-zone -D RUN_TESTS=1
+  GCC:*_*_X64_CC_FLAGS = -fno-stack-protector -mno-red-zone -D RUN_TESTS=1
 !endif
 
 [LibraryClasses]
