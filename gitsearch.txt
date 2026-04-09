@@ -1,0 +1,676 @@
+ Volume in drive C is Windows
+ Volume Serial Number is EC9C-E59E
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git
+
+09-04-2026  06:02    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  06:00                76 COMMIT_EDITMSG
+09-04-2026  03:22               330 config
+09-04-2026  03:22                73 description
+09-04-2026  06:02               428 FETCH_HEAD
+09-04-2026  06:02                21 HEAD
+09-04-2026  03:22    <DIR>          hooks
+09-04-2026  06:02             5,992 index
+09-04-2026  03:22    <DIR>          info
+09-04-2026  03:22    <DIR>          logs
+09-04-2026  06:02    <DIR>          objects
+09-04-2026  06:00                41 ORIG_HEAD
+09-04-2026  03:22               112 packed-refs
+09-04-2026  03:22    <DIR>          refs
+               8 File(s)          7,073 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\hooks
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  03:22               478 applypatch-msg.sample
+09-04-2026  03:22               896 commit-msg.sample
+09-04-2026  03:22             4,726 fsmonitor-watchman.sample
+09-04-2026  03:22               189 post-update.sample
+09-04-2026  03:22               424 pre-applypatch.sample
+09-04-2026  03:22             1,649 pre-commit.sample
+09-04-2026  03:22               416 pre-merge-commit.sample
+09-04-2026  03:22             1,374 pre-push.sample
+09-04-2026  03:22             4,898 pre-rebase.sample
+09-04-2026  03:22               544 pre-receive.sample
+09-04-2026  03:22             1,492 prepare-commit-msg.sample
+09-04-2026  03:22             2,783 push-to-checkout.sample
+09-04-2026  03:22             2,308 sendemail-validate.sample
+09-04-2026  03:22             3,650 update.sample
+              14 File(s)         25,827 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\info
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  03:22               240 exclude
+               1 File(s)            240 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\logs
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  06:02             2,672 HEAD
+09-04-2026  03:22    <DIR>          refs
+               1 File(s)          2,672 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\logs\refs
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  03:22    <DIR>          heads
+09-04-2026  03:22    <DIR>          remotes
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\logs\refs\heads
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  06:00             2,030 main
+               1 File(s)          2,030 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\logs\refs\remotes
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  05:26    <DIR>          origin
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\logs\refs\remotes\origin
+
+09-04-2026  05:26    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  03:22               182 HEAD
+09-04-2026  06:00               730 main
+               2 File(s)            912 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects
+
+09-04-2026  06:02    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51    <DIR>          01
+09-04-2026  04:49    <DIR>          03
+09-04-2026  05:26    <DIR>          0a
+09-04-2026  05:51    <DIR>          0b
+09-04-2026  05:51    <DIR>          10
+09-04-2026  04:49    <DIR>          12
+09-04-2026  05:51    <DIR>          1a
+09-04-2026  05:51    <DIR>          1b
+09-04-2026  05:51    <DIR>          1f
+09-04-2026  05:51    <DIR>          27
+09-04-2026  04:49    <DIR>          2b
+09-04-2026  06:00    <DIR>          2c
+09-04-2026  05:51    <DIR>          2d
+09-04-2026  04:49    <DIR>          30
+09-04-2026  04:49    <DIR>          34
+09-04-2026  05:51    <DIR>          35
+09-04-2026  05:51    <DIR>          37
+09-04-2026  04:49    <DIR>          3a
+09-04-2026  05:51    <DIR>          46
+09-04-2026  05:51    <DIR>          47
+09-04-2026  05:51    <DIR>          4d
+09-04-2026  05:51    <DIR>          56
+09-04-2026  05:51    <DIR>          58
+09-04-2026  05:51    <DIR>          5e
+09-04-2026  04:49    <DIR>          5f
+09-04-2026  05:51    <DIR>          64
+09-04-2026  05:51    <DIR>          67
+09-04-2026  05:51    <DIR>          74
+09-04-2026  05:51    <DIR>          78
+09-04-2026  05:51    <DIR>          82
+09-04-2026  05:51    <DIR>          88
+09-04-2026  05:51    <DIR>          8d
+09-04-2026  05:51    <DIR>          94
+09-04-2026  05:51    <DIR>          95
+09-04-2026  05:51    <DIR>          99
+09-04-2026  04:49    <DIR>          9c
+09-04-2026  05:51    <DIR>          9d
+09-04-2026  06:00    <DIR>          a7
+09-04-2026  05:13    <DIR>          ab
+09-04-2026  06:00    <DIR>          ad
+09-04-2026  05:51    <DIR>          af
+09-04-2026  05:51    <DIR>          b3
+09-04-2026  06:00    <DIR>          b8
+09-04-2026  05:51    <DIR>          ba
+09-04-2026  05:51    <DIR>          be
+09-04-2026  05:51    <DIR>          bf
+09-04-2026  05:51    <DIR>          c1
+09-04-2026  05:56    <DIR>          c5
+09-04-2026  05:51    <DIR>          d0
+09-04-2026  05:51    <DIR>          d2
+09-04-2026  05:51    <DIR>          d3
+09-04-2026  04:49    <DIR>          d4
+09-04-2026  05:26    <DIR>          d9
+09-04-2026  05:51    <DIR>          df
+09-04-2026  05:13    <DIR>          e7
+09-04-2026  05:51    <DIR>          e8
+09-04-2026  05:51    <DIR>          e9
+09-04-2026  05:51    <DIR>          eb
+09-04-2026  05:56    <DIR>          f1
+09-04-2026  05:51    <DIR>          f3
+09-04-2026  05:51    <DIR>          f6
+09-04-2026  05:51    <DIR>          fb
+09-04-2026  05:51    <DIR>          fc
+09-04-2026  05:51    <DIR>          fd
+09-04-2026  03:22    <DIR>          info
+09-04-2026  03:22    <DIR>          pack
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\01
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               730 1df3dc658573d3218465e76719eecd9f71b8e6
+               1 File(s)            730 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\03
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49               160 ad00eefab78eb30552856c3691ac8cdd8b5687
+               1 File(s)            160 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\0a
+
+09-04-2026  05:26    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:26               186 d982b57ff9c113e8328a9fd158c7f47652f6ca
+               1 File(s)            186 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\0b
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               639 227afb0b3d83a6c085d7474efd5dae83b2fc17
+               1 File(s)            639 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\10
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               183 07ab264bd6606a20bee4f15f3313ac3c302614
+               1 File(s)            183 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\12
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49             3,323 de101b20263f76346f11f74f315b203eb4efcb
+               1 File(s)          3,323 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\1a
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               274 0b623644657d250f1c3559705ffa954eecfd5d
+               1 File(s)            274 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\1b
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               131 67b99d47966fb01442cc00df5a7c896720e248
+               1 File(s)            131 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\1f
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               639 aff6609581cc8b999d9192aa7064da34f02fd7
+09-04-2026  05:51               595 d971500cb81e8b46d71dbdb0ce80331082ccac
+               2 File(s)          1,234 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\27
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               395 026c602a3a69bc9af20cc89c1a3aafc19863a3
+               1 File(s)            395 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\2b
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49                63 e012882de9665c7fe13cfe16ff5d7be21d39a4
+               1 File(s)             63 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\2c
+
+09-04-2026  06:00    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  06:00                58 b289c50a4af5472d08c2076860a747af56c2b9
+               1 File(s)             58 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\2d
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               507 9c32c913cab07eab3056ee765acc4660b437bd
+               1 File(s)            507 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\30
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49         1,374,004 5181387c805b43712cb911fd60e1b31acde047
+               1 File(s)      1,374,004 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\34
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49            76,429 afa4f8bfb70003eabf09e6f6987c0944179f50
+               1 File(s)         76,429 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\35
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               484 77100a4c625915b14d768be3dc9111b6d6ea73
+               1 File(s)            484 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\37
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               604 4839e04d82cfbe4969a3be3d74c34b4fef0a07
+               1 File(s)            604 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\3a
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49            85,409 217d6a10f5ffc8e6bd53667ddc770b720524cc
+               1 File(s)         85,409 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\46
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,262 ea826401688141a7863583bf8c7978984cc3a2
+               1 File(s)          1,262 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\47
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,251 09b6779438da0cdec52713e676d69fe161f152
+               1 File(s)          1,251 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\4d
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               516 40270ca00348cf547991e4321bf7fb06effcf8
+09-04-2026  04:49            85,584 b2de0106f0ec4f3e60866a0bd5a65c26abfd77
+               2 File(s)         86,100 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\56
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               129 0bbc19618acc3270cc1ac9e63459715972085c
+09-04-2026  05:48               177 ae1b8b635cef9b20baf28888e4c50c5f4fa7b5
+               2 File(s)            306 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\58
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               124 8ad2a7994bebd64d116e1027c6d121b2bd3251
+               1 File(s)            124 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\5e
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               528 bad1d8bce8c750c4b6c614960f67f23cb07e41
+               1 File(s)            528 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\5f
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49           111,437 46197283d5f312e2840939310756791c33e29a
+09-04-2026  04:49            99,115 c66b15c5afb70cd535cd1a76d6c6962dd075f1
+               2 File(s)        210,552 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\64
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               295 c831cc4e0edeb7d2e1b91ff303dd98d4f65a5e
+               1 File(s)            295 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\67
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,114 4b5ff279893849448bcbbb6e986eb59ea495eb
+09-04-2026  04:49           299,352 a025ed16aebffc5d6e0bfa6dbb1b44b4a7129c
+09-04-2026  04:49           470,169 ac4ab45391ecdcc027d8b6f83f81052e36899e
+               3 File(s)        770,635 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\74
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               636 5887fbc1ed6697faee5a24d5e1a37e49aba698
+09-04-2026  05:48               215 a7aefbc9cccdf78b3a15fa9ef31c28cea808ed
+               2 File(s)            851 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\78
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               503 a0d40821c0d9ce2c7cbb022ae2d08b542fbae1
+               1 File(s)            503 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\82
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56                63 db9b83506b31a9ad49c7111499434081e66e6a
+               1 File(s)             63 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\88
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,053 a97ca5fdcfcb73418ac70aed12cf041223e462
+               1 File(s)          1,053 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\8d
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56                94 680f979b76a1052e6d0c64cc691c5ca92843d5
+               1 File(s)             94 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\94
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               554 a6f0fa26d3f3aacfb5832c2d941b7081f01154
+               1 File(s)            554 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\95
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,550 058a5a0ffdab2ba9d42d15e21151e6b54d623e
+09-04-2026  05:51               762 923f6fc8d54164120db845cab5826b328a304b
+               2 File(s)          2,312 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\99
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               186 3eb9592ba53e396758eb73c22d49700bac13f1
+               1 File(s)            186 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\9c
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49           274,173 1952e49d50a1b0110b23f4614ac62c8bd71079
+               1 File(s)        274,173 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\9d
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               788 3cd0f7c4bf61b1eaff0202e8b4cc37889fed85
+               1 File(s)            788 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\a7
+
+09-04-2026  06:00    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  06:00                75 274a81cdbe4c7c95dd71677de03b9c9c4fcc36
+               1 File(s)             75 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\ab
+
+09-04-2026  05:13    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:13               216 13c62665ccc32ca2f5187240237db0ac951159
+               1 File(s)            216 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\ad
+
+09-04-2026  06:00    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  06:00               207 723a0799e0499a3754c1fd51c63b38f74130ca
+               1 File(s)            207 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\af
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51                98 cb2fdb8c89a458d6c9dca60f30d240065acf31
+               1 File(s)             98 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\b3
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               429 1c59a08012fed9d36d8a17c02b72c1abba6af8
+               1 File(s)            429 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\b8
+
+09-04-2026  06:00    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               110 4c527ea785e6e2337d00bed97b1727112ffb66
+09-04-2026  06:00               279 4ebbff1bcd9aac7485d39a0d4490e89e5d927f
+               2 File(s)            389 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\ba
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               281 fc08c676e0b02a311ba8638eaa83c5648821bf
+               1 File(s)            281 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\be
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56                91 22bcb9529aa5d849267593f6bc69ca7577cdaf
+               1 File(s)             91 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\bf
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,013 52eb08a0cbebc8d65014c7010b214144585af7
+               1 File(s)          1,013 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\c1
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51            80,732 f6411d52a357210a9db313289ef94b0f772dfd
+               1 File(s)         80,732 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\c5
+
+09-04-2026  05:56    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               223 a63d87e2172748039a3a8a32b04b28f36e4f14
+               1 File(s)            223 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\d0
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               248 3de9a30600d080377f055ed4669cdf567f61e2
+09-04-2026  05:51             1,753 b06241e849131ab26a02800ca90cae0c0a6b30
+               2 File(s)          2,001 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\d2
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               210 a607150ffd4e5feb86e70307a2d863af48cad8
+               1 File(s)            210 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\d3
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               168 96122f46b416ba1cab035e0b082fdea7fb0c96
+09-04-2026  04:49               216 dcf4ba8bb2c2ba52b16741cfdf3207f717af59
+               2 File(s)            384 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\d4
+
+09-04-2026  04:49    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  04:49             1,048 d22ea307e797a2402f70108abb1a0e00189953
+               1 File(s)          1,048 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\d9
+
+09-04-2026  05:26    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:26               215 7d66978f6fcb09c22270c437baac1d7e5b14a8
+               1 File(s)            215 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\df
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               122 64d9f742b14159cce0c0517e35d02752b21aa5
+09-04-2026  04:49               271 ea05f47fdcc06d118604d6503b8a74fcf9dfa9
+               2 File(s)            393 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\e7
+
+09-04-2026  05:13    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:13               155 d0eea5d21ddcc016f1872d1bcdcf8636973616
+               1 File(s)            155 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\e8
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               424 33d08332e89dfa88b4008f1703020a5f703473
+               1 File(s)            424 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\e9
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               190 8671a7ecf50c83cbe7eed7d48bfd6dd4738174
+               1 File(s)            190 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\eb
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               219 dfb1581dfb8657a119579bf3a920696d5266d8
+               1 File(s)            219 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\f1
+
+09-04-2026  05:56    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               239 79df2523d3296f786cfcde37c8698631a7d531
+               1 File(s)            239 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\f3
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51               350 3b30c2990a1843c834f5891d7345b11b1f003f
+09-04-2026  05:51               103 a5f387656442c0d07615cbbdc607de894d8f9c
+               2 File(s)            453 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\f6
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               298 10914e086223a0f27544a5637ed28b41948c49
+09-04-2026  05:51               173 4e46b10a0505ea93f2781a0d9fa6d8f0de3b82
+               2 File(s)            471 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\fb
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,692 6dd7ab5a9c404666fecbad744d63bad4a5e01e
+               1 File(s)          1,692 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\fc
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:56               126 303e3d32df49a99df338af78828ecc0f2bcb8f
+               1 File(s)            126 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\fd
+
+09-04-2026  05:51    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  05:51             1,026 e28a27f9ae538988e6edc08a9c6b6b2e92d77f
+               1 File(s)          1,026 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\info
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\objects\pack
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  03:22             1,156 pack-02c01df2544e80b469e11f25a99c6b293f156304.idx
+09-04-2026  03:22               868 pack-02c01df2544e80b469e11f25a99c6b293f156304.pack
+09-04-2026  03:22                64 pack-02c01df2544e80b469e11f25a99c6b293f156304.rev
+               3 File(s)          2,088 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\refs
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  06:02    <DIR>          ..
+09-04-2026  06:00    <DIR>          heads
+09-04-2026  03:22    <DIR>          remotes
+09-04-2026  03:22    <DIR>          tags
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\refs\heads
+
+09-04-2026  06:00    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  06:00                41 main
+               1 File(s)             41 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\refs\remotes
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  06:02    <DIR>          origin
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\refs\remotes\origin
+
+09-04-2026  06:02    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+09-04-2026  03:22                30 HEAD
+09-04-2026  06:00                41 main
+               2 File(s)             71 bytes
+
+ Directory of C:\Users\Hp\OneDrive\Documents\Projects\Scratch\.git\refs\tags
+
+09-04-2026  03:22    <DIR>          .
+09-04-2026  03:22    <DIR>          ..
+               0 File(s)              0 bytes
+
+     Total Files Listed:
+             111 File(s)      3,030,397 bytes
+             239 Dir(s)  288,907,538,432 bytes free
