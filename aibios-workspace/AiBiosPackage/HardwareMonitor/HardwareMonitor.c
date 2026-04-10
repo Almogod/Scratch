@@ -87,6 +87,11 @@ PollSensors (
     return EFI_INVALID_PARAMETER;
   }
 
+  // If no EC present (all ones back), return NOT_FOUND early
+  if (IoRead8(0x66) == 0xFF) {
+     return EFI_NOT_FOUND;
+  }
+
   // Read CPU temperature via ACPI EC (embedded controller)
   // Port 0x62/0x66 protocol with timeout guard:
   Timeout = 1000; // 1000 * 10 us = 10 ms max
@@ -96,11 +101,6 @@ PollSensors (
   
   if (Timeout == 0) {
     return EFI_TIMEOUT; // Expected in Test 3.2
-  }
-
-  // If no EC present (all ones back), return NOT_FOUND
-  if (IoRead8(0x66) == 0xFF) {
-     return EFI_NOT_FOUND;
   }
 
   Latest->Temperature = 450;

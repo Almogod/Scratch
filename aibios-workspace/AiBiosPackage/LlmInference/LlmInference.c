@@ -132,16 +132,23 @@ LlmInferenceRun (
   }
 
   // Final Decision Logic:
-  // If "show" or "stat" is found AND no explicit "optimize" etc, it's a report
-  if (IsQuery && !IsAction) {
-    Result->OutputTokens[0] = INTENT_STATUS_REPORT;
-  } else if (IsAction || (!IsQuery && !IsAction)) {
-    // Standard profile matching
-    if (StrStr(Prompt, L"gaming") || StrStr(Prompt, L"perf")) {
+  if (IsAction) {
+    // User wants to change system state. Match specific profiles or default.
+    if (StrStr(Prompt, L"gaming") || StrStr(Prompt, L"perf") || StrStr(Prompt, L"boost")) {
       Result->OutputTokens[0] = INTENT_GAMING;
     } else if (StrStr(Prompt, L"battery") || StrStr(Prompt, L"eco") || StrStr(Prompt, L"save")) {
       Result->OutputTokens[0] = INTENT_BATTERY;
+    } else if (StrStr(Prompt, L"quiet") || StrStr(Prompt, L"silent") || StrStr(Prompt, L"fan")) {
+      Result->OutputTokens[0] = INTENT_SILENT;
+    } else {
+      // Default to diagnostic optimization if no specific profile is requested
+      Result->OutputTokens[0] = INTENT_DIAGNOSTIC;
     }
+  } else if (IsQuery) {
+    // User only wants to see information
+    Result->OutputTokens[0] = INTENT_STATUS_REPORT;
+  } else {
+    Result->OutputTokens[0] = INTENT_UNKNOWN;
   }
 
   if (TokenCount == 0xFFFFFFFF) {
