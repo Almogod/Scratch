@@ -27,7 +27,11 @@ DisplayStatus (
   EFI_STATUS    Status;
 
   Status = PollSensors (&Latest);
-  if (EFI_ERROR (Status)) {
+  if (Status == EFI_NOT_FOUND) {
+    // Graceful simulation instead of error
+    Print (L"[aiBIOS] Hardware not detected. Using simulated telemetry data.\n");
+    // Simulated values were set in HardwareMonitor.c on NOT_FOUND, but let's be double sure if it fails here
+  } else if (EFI_ERROR (Status)) {
     Print (L"[ERROR] Failed to poll sensors: %r\n", Status);
     return;
   }
@@ -122,6 +126,9 @@ AiBiosMainEntry (
       Print (L"[ERROR] Inference failed: %r\n", Status);
       continue;
     }
+
+    // AI feedback (showing engine activity)
+    Print (L"[aiBIOS] Inference pass: %d tokens through %d layers complete.\n", InfResult.InputLen, NUM_LAYERS);
 
     Intent = (USER_INTENT)InfResult.OutputTokens[0];
 
