@@ -41,6 +41,15 @@ DisplayStatus (
   Print (L"  Fan Speed:       %d RPM\n", Latest.FanRpm);
   Print (L"  CPU Voltage:     %d mV\n", Latest.CpuVoltage);
   Print (L"  SSD Wear:        %d %%\n", Latest.SsdWearPct);
+  
+  COMPONENT_HEALTH SsdHealth = AnalyzeSsdHealth(&Latest);
+  if (SsdHealth == HEALTH_CRITICAL) {
+    Print (L"  SSD Health:      [CRITICAL] - Replacement Recommended\n");
+  } else if (SsdHealth == HEALTH_WARNING) {
+    Print (L"  SSD Health:      [WARNING] - High wear detected\n");
+  } else {
+    Print (L"  SSD Health:      [OK]\n");
+  }
   Print (L"------------------------------------\n\n");
 }
 

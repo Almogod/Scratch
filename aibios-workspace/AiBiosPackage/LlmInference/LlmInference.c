@@ -11,6 +11,19 @@ STATIC QUANTIZED_VECTOR gKvCache[NUM_LAYERS][KV_CACHE_SIZE][2]; // [layer][pos][
 STATIC QUANTIZED_VECTOR gHiddenState;
 STATIC QUANTIZED_VECTOR gNextHiddenState;
 
+// INTENT_SIGNATURES: Simulated output weights for the classifier head.
+// Must match the order of USER_INTENT enum in SettingsTuner.h
+STATIC CONST INT8 gIntentSignatures[8][EMBEDDING_DIM] = {
+  { [0 ... EMBEDDING_DIM-1] = 0x1A }, // INTENT_GAMING       = 0
+  { [0 ... EMBEDDING_DIM-1] = 0x2B }, // INTENT_ECO          = 1
+  { [0 ... EMBEDDING_DIM-1] = 0x33 }, // INTENT_SILENT       = 2
+  { [0 ... EMBEDDING_DIM-1] = 0x7F }, // INTENT_VIDEO_EDIT   = 3
+  { [0 ... EMBEDDING_DIM-1] = 0xF2 }, // INTENT_BATTERY      = 4
+  { [0 ... EMBEDDING_DIM-1] = 0x0A }, // INTENT_DIAGNOSTIC   = 5
+  { [0 ... EMBEDDING_DIM-1] = 0x00 }, // INTENT_UNKNOWN      = 6
+  { [0 ... EMBEDDING_DIM-1] = 0x01 }  // INTENT_STATUS_REPORT = 7
+};
+
 EFI_STATUS
 LlmInferenceInit (
   IN  CONST UINT8   *ModelWeights,
@@ -68,6 +81,38 @@ MultiHeadAttention (
   DEBUG ((DEBUG_INFO, "[aiBIOS] Layer %d Attention pass complete\n", LayerIdx));
 }
 
+STATIC USER_INTENT
+PerformClassification (
+  IN  QUANTIZED_VECTOR  *HiddenState
+  )
+{
+  UINT32 i, j;
+  INT32  Score, MaxScore = -2147483647;
+  INT32  MaxIntent = INTENT_UNKNOWN;
+  
+  // We compute the "similarity" between the final hidden state and each intent signature.
+  // This simulates the final linear layer (Logits = W_out * HiddenState).
+  // We check all intents except UNKNOWN (which is a fallback).
+  for (i = 0; i < 8; i++) {
+    if (i == INTENT_UNKNOWN) continue;
+
+    Score = 0;
+    for (j = 0; j < EMBEDDING_DIM; j++) {
+      Score += (INT32)HiddenState->Data[j] * (INT32)gIntentSignatures[i][j];
+    }
+    
+    if (Score > MaxScore) {
+      MaxScore = Score;
+      MaxIntent = i;
+    }
+  }
+
+  // If score is too low or ambiguous, return UNKNOWN
+  if (MaxScore < 100) return INTENT_UNKNOWN;
+
+  return (USER_INTENT)MaxIntent;
+}
+
 EFI_STATUS
 LlmInferenceRun (
   IN  CONST CHAR16        *Prompt,
@@ -115,23 +160,6 @@ LlmInferenceRun (
   UINT32            LayerIdx;
   UINTN             i, j;
 
-  BOOLEAN IsQuery = FALSE;
-  BOOLEAN IsAction = FALSE;
-
-  // Search for Query verbs/nouns
-  if (StrStr(Prompt, L"show") || StrStr(Prompt, L"status") || 
-      StrStr(Prompt, L"thermal") || StrStr(Prompt, L"stat") ||
-      StrStr(Prompt, L"sensor") || StrStr(Prompt, L"temp")) {
-    IsQuery = TRUE;
-  }
-
-  // Search for Action verbs
-  if (StrStr(Prompt, L"optimize") || StrStr(Prompt, L"enhance") || 
-      StrStr(Prompt, L"boost") || StrStr(Prompt, L"maximize") ||
-      StrStr(Prompt, L"tune")) {
-    IsAction = TRUE;
-  }
-
   // Initialize hidden state from embeddings (using tokens and weights)
   ZeroMem(&gHiddenState, sizeof(gHiddenState));
   for (i = 0; i < TokenCount && i < MAX_INPUT_TOKENS; i++) {
@@ -168,25 +196,11 @@ LlmInferenceRun (
   }
 
   // 3. Generate Output / Decision
-  // Instead of simple StrStr, we now base the decision on the final state gHiddenState
-  // For the prototype, we use the processed state to drive higher-level logic.
-  if (IsAction) {
-    if (StrStr(Prompt, L"gaming") || StrStr(Prompt, L"perf") || StrStr(Prompt, L"boost")) {
-      Result->OutputTokens[0] = INTENT_GAMING;
-    } else if (StrStr(Prompt, L"battery") || StrStr(Prompt, L"eco") || StrStr(Prompt, L"save")) {
-      Result->OutputTokens[0] = INTENT_BATTERY;
-    } else if (StrStr(Prompt, L"quiet") || StrStr(Prompt, L"silent") || StrStr(Prompt, L"fan")) {
-      Result->OutputTokens[0] = INTENT_SILENT;
-    } else {
-      Result->OutputTokens[0] = INTENT_DIAGNOSTIC;
-    }
-  } else if (IsQuery) {
-    Result->OutputTokens[0] = INTENT_STATUS_REPORT;
-  } else {
-    // Transformer state-driven diagnostic fallback if no keywords found
-    Result->OutputTokens[0] = INTENT_UNKNOWN;
-  }
-
+  // Instead of keyword matching, we now use the architectural Transformer state.
+  // The state was updated through 22 layers of MultiHeadAttention and FFN.
+  DEBUG ((DEBUG_INFO, "[aiBIOS] Classification head evaluating hidden state...\n"));
+  
+  Result->OutputTokens[0] = PerformClassification(&gHiddenState);
   Result->OutputLen = 1;
 
   if (TokenCount == 0xFFFFFFFF) {
