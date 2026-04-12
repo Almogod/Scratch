@@ -75,6 +75,11 @@ ApplyProfile (
     DEBUG ((DEBUG_INFO, "[aiBIOS] Enabling Above 4G Decoding and Resizable BAR for AI Load...\n"));
     // Mock PCI config space writes
   }
+
+  if (Profile->VirtualizationEnabled) {
+    DEBUG ((DEBUG_INFO, "[aiBIOS] Enabling VT-d/AMD-V hardware virtualization extensions...\n"));
+    // Mock VMX_BASIC (0x480) or similar
+  }
   
   return EFI_SUCCESS;
 }

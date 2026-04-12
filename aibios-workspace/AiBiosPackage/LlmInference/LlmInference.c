@@ -221,6 +221,11 @@ LlmInferenceRun (
       if (Token == 6008 || Token == 6009) {
         for (j=12; j<16; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 100); // Security
       }
+
+      // v0.8 Agency Detection
+      if (Token == 6101 || Token == 6102 || Token == 6103 || Token == 6104) {
+        Result->OutputTokens[1] = 1; // Mark as 'Actionable'
+      }
       
       continue;
     }

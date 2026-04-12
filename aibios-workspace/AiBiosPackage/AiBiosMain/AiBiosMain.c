@@ -172,6 +172,12 @@ AiBiosMainEntry (
        if (!EFI_ERROR(Status)) {
          Print (L"[aiBIOS Assistant] %s\n", Explanation);
          Print (L"  Relevant Setting: [%s]\n", SettingName);
+         
+         if (InfResult.OutputTokens[1] == 1) { // Agency Bit Set
+           gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
+           Print (L"[aiBIOS Agency] Autonomous Action Triggered: Configuring %s...\n", SettingName);
+           ApplyProfile(Intent);
+         }
        } else {
          Print (L"[aiBIOS Assistant] I'm sorry, I don't have information on that topic yet. Try 'virtual machine' or 'secure boot'.\n");
        }

@@ -27,6 +27,7 @@ typedef struct {
   UINT8         FanCurveId;
   UINT32        TdpWatts;
   BOOLEAN       XmpEnabled;
+  BOOLEAN       VirtualizationEnabled; // v0.8
 } TUNING_PROFILE;
 
 EFI_STATUS
