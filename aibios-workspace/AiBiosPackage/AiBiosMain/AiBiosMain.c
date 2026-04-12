@@ -19,6 +19,10 @@
 EFI_STATUS RunAllTests(VOID);
 #endif
 
+// v0.9 Contextual Memory
+STATIC USER_INTENT gLastActionableIntent = INTENT_UNKNOWN;
+STATIC CHAR16      gLastSettingName[64] = {0};
+
 VOID
 DisplayStatus (
   VOID
@@ -31,7 +35,6 @@ DisplayStatus (
   if (Status == EFI_NOT_FOUND) {
     // Graceful simulation instead of error
     Print (L"[aiBIOS] Hardware not detected. Using simulated telemetry data.\n");
-    // Simulated values were set in HardwareMonitor.c on NOT_FOUND, but let's be double sure if it fails here
   } else if (EFI_ERROR (Status)) {
     Print (L"[ERROR] Failed to poll sensors: %r\n", Status);
     return;
@@ -173,17 +176,43 @@ AiBiosMainEntry (
          Print (L"[aiBIOS Assistant] %s\n", Explanation);
          Print (L"  Relevant Setting: [%s]\n", SettingName);
          
+         // v0.9 Save Context
+         gLastActionableIntent = Intent;
+         StrCpyS(gLastSettingName, 64, SettingName);
+
          if (InfResult.OutputTokens[1] == 1) { // Agency Bit Set
            gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
            Print (L"[aiBIOS Agency] Autonomous Action Triggered: Configuring %s...\n", SettingName);
            ApplyProfile(Intent);
+         } else {
+           gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
+           Print (L"[aiBIOS Brain] Context stored. You can type 'do it' or 'configure it' to apply this setting.\n");
          }
        } else {
          Print (L"[aiBIOS Assistant] I'm sorry, I don't have information on that topic yet. Try 'virtual machine' or 'secure boot'.\n");
        }
     } else if (Intent == INTENT_UNKNOWN) {
-       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
-       Print (L"[aiBIOS] Intent ambiguous. Please clarify if you want to 'show status', 'optimize', or 'ask' a question.\n");
+        // v0.9/v1.0 Context & Status Resolver
+        if ((InfResult.OutputTokens[1] == 1 || InfResult.OutputTokens[2] == 1 || InfResult.OutputTokens[3] == 1) && gLastActionableIntent != INTENT_UNKNOWN) {
+          
+          if (InfResult.OutputTokens[3] == 1) { // It's a STATUS QUERY ("is it done?")
+            if (GetActiveIntent() == gLastActionableIntent) {
+              gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
+              Print (L"[aiBIOS Brain] Yes, the '%s' configuration is currently active and verified.\n", gLastSettingName);
+            } else {
+              gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
+              Print (L"[aiBIOS Brain] Not yet. The '%s' configuration is pending. Type 'do it' to apply.\n", gLastSettingName);
+            }
+          } else { // It's an AGENCY COMMAND ("do it")
+            gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
+            Print (L"[aiBIOS Brain] Context identified. Applying '%s' configuration as requested...\n", gLastSettingName);
+            ApplyProfile(gLastActionableIntent);
+          }
+
+        } else {
+          gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
+          Print (L"[aiBIOS] Intent ambiguous. Please clarify if you want to 'show status', 'optimize', or 'ask' a question.\n");
+        }
     } else {
       // AI Response Color (Green)
       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));

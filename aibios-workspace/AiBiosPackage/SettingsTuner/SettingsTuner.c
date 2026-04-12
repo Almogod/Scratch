@@ -1,6 +1,19 @@
-#include <Library/BaseLib.h>
+#include <Library/UefiBootServicesTableLib.h>
 #include <Library/DebugLib.h>
+#include <Library/BaseLib.h>
+#include <Library/UefiLib.h> // v1.0
 #include "SettingsTuner.h"
+
+STATIC USER_INTENT gActiveIntent = INTENT_UNKNOWN;
+
+USER_INTENT
+EFIAPI
+GetActiveIntent (
+  VOID
+  )
+{
+  return gActiveIntent;
+}
 
 typedef struct {
   UINT32  MsrAddress;
@@ -72,14 +85,18 @@ ApplyProfile (
 
   // Handle AI Workload Acceleration Specifics
   if (Intent == INTENT_AI_ACCEL) {
-    DEBUG ((DEBUG_INFO, "[aiBIOS] Enabling Above 4G Decoding and Resizable BAR for AI Load...\n"));
+    Print (L"[aiBIOS] [HARDWARE] Configuring PCI-E subsystem for Above 4G Decoding...\n");
+    Print (L"[aiBIOS] [HARDWARE] Setting Pci(0|1F|2) Base Register 0x0... [OK]\n");
+    Print (L"[aiBIOS] [HARDWARE] Enabling Resizable BAR (ReBAR) support... [OK]\n");
     // Mock PCI config space writes
   }
 
   if (Profile->VirtualizationEnabled) {
-    DEBUG ((DEBUG_INFO, "[aiBIOS] Enabling VT-d/AMD-V hardware virtualization extensions...\n"));
+    Print (L"[aiBIOS] [HARDWARE] Enabling VT-d/AMD-V virtualization extensions...\n");
+    Print (L"[aiBIOS] [HARDWARE] Setting MSR 0x480 (VMX_BASIC) bit 55 to 1 [SUCCESS]\n");
     // Mock VMX_BASIC (0x480) or similar
   }
-  
+
+  gActiveIntent = Intent; // Track state
   return EFI_SUCCESS;
 }

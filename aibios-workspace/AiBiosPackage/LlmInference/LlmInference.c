@@ -222,9 +222,19 @@ LlmInferenceRun (
         for (j=12; j<16; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 100); // Security
       }
 
-      // v0.8 Agency Detection
-      if (Token == 6101 || Token == 6102 || Token == 6103 || Token == 6104) {
+      // v0.8/v0.9 Agency Detection
+      if (Token == 6101 || Token == 6102 || Token == 6103 || Token == 6104 || Token == 6105) {
         Result->OutputTokens[1] = 1; // Mark as 'Actionable'
+      }
+
+      // v0.9 Context Detection
+      if (Token == 6201) {
+        Result->OutputTokens[2] = 1; // Mark as 'Contextual' ('it')
+      }
+
+      // v1.0 Status Check Detection
+      if (Token == 6301 || Token == 6302 || Token == 6303) {
+        Result->OutputTokens[3] = 1; // Mark as 'Status Check'
       }
       
       continue;

@@ -35,6 +35,12 @@ ApplyProfile (
   IN USER_INTENT Intent
   );
 
+USER_INTENT
+EFIAPI
+GetActiveIntent (
+  VOID
+  );
+
 
 EFI_STATUS
 SafeWriteMsr (
