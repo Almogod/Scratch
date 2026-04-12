@@ -2,6 +2,7 @@
 #include <Library/BaseLib.h>
 #include <Library/IoLib.h>
 #include <Library/TimerLib.h>
+#include <Library/DebugLib.h>
 #include "HardwareMonitor.h"
 
 COMPONENT_HEALTH

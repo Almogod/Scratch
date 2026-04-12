@@ -152,6 +152,7 @@ AiBiosMainEntry (
 
     Intent = (USER_INTENT)InfResult.OutputTokens[0];
 
+    if (Intent == INTENT_STATUS_REPORT) {
       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTCYAN, EFI_BLACK));
       Print (L"[aiBIOS] Retrieving system telemetry as requested...\n");
       DisplayStatus ();

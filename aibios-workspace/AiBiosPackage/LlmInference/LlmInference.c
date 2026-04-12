@@ -195,9 +195,10 @@ LlmInferenceRun (
       if (Token == 5011 || Token == 5001 || Token == 5023) MockVal = 10; // temp/thermal/thermals -> DIAGNOSTIC (or tuning)
       if (Token == 5012 || Token == 5022 || Token == 5020 || Token == 5021) MockVal = 70; // fan/rpm/inc/dec -> FAN_TUNING
       
-      // New Semantic/AI Acceleration tokens
-      if (Token == 12199) MockVal = 80; // hello/question -> SEMANTIC_QUERY
-      if (Result->InputTokens[i] == '?' || Result->InputTokens[i] == 'W') MockVal = 80; // 'How', 'What', '?'
+      // New Semantic/AI Acceleration tokens (v0.6)
+      if (Token == 6001 || Token == 6002) MockVal = 95; // ai / development -> AI_ACCEL
+      if (Token == 6004 || Token == 6005 || Token == 6003) MockVal = 85; // virtual / machine / how -> SEMANTIC
+      if (Token == 6008 || Token == 6009) MockVal = -85; // check / security -> SEC_ANOMALY
       
       if (MockVal != 0) {
         for (j = 0; j < EMBEDDING_DIM; j++) {

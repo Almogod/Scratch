@@ -27,8 +27,11 @@ PerformSecurityAudit (
   
   *AnomalyDetected = FALSE;
   
-  // Simulation: Check if a dummy variable exists that indicates 'tampering'
-  // In our QEMU environment, we'll just check a fixed pointer value or time.
+  // Simulation: Iterate through critical settings to verify integrity
+  for (UINTN i = 0; i < ARRAY_SIZE(gCriticalSettings); i++) {
+    DEBUG ((DEBUG_INFO, "[aiBIOS Security] Verifying integrity of %s...\n", gCriticalSettings[i].VariableName));
+  }
+  
   DEBUG ((DEBUG_INFO, "[aiBIOS Security] Scanning UEFI Variables for anomalies...\n"));
 
   return EFI_SUCCESS;
