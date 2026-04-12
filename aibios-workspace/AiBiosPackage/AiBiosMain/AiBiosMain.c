@@ -12,6 +12,7 @@
 #include "../HardwareMonitor/HardwareMonitor.h"
 #include "../SettingsTuner/SettingsTuner.h"
 #include "../NlInterface/NlInterface.h"
+#include "../Security/Security.h"
 
 #ifdef RUN_TESTS
 #include "../Tests/TestMain.h"
@@ -83,11 +84,21 @@ AiBiosMainEntry (
     return EFI_NOT_FOUND;
   }
 
-  // Initialize LLM Engine
   Status = LlmInferenceInit(gModelWeights, sizeof(gModelWeights));
   if (EFI_ERROR(Status)) {
     DEBUG ((DEBUG_ERROR, "[aiBIOS] LLM Init failed: %r\n", Status));
     return Status;
+  }
+
+  // Phase 3: Proactive Security Audit
+  BOOLEAN Anomaly;
+  Status = PerformSecurityAudit(&Anomaly);
+  if (!EFI_ERROR(Status) && Anomaly) {
+    gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTRED, EFI_BLACK));
+    Print(L"[CAUTION] Security Anomaly Detected! Check bios variables for tampering.\n");
+    gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGRAY, EFI_BLACK));
+  } else {
+    Print(L"[aiBIOS] Security Audit: Clean boot verified.\n");
   }
 
   Print(L"Type 'help' for commands, 'exit' to quit.\n\n");
@@ -141,14 +152,31 @@ AiBiosMainEntry (
 
     Intent = (USER_INTENT)InfResult.OutputTokens[0];
 
-    if (Intent == INTENT_STATUS_REPORT) {
-      // Info Response Color (Cyan)
       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTCYAN, EFI_BLACK));
       Print (L"[aiBIOS] Retrieving system telemetry as requested...\n");
       DisplayStatus ();
+    } else if (Intent == INTENT_AI_ACCEL) {
+       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
+       Print (L"[aiBIOS] AI Workload detected. Optimizing PCI-E path and NPU resources...\n");
+       ApplyProfile(Intent);
+       Print (L"  - Resizable BAR: Enabled\n");
+       Print (L"  - Above 4G Decoding: Enabled\n");
+       Print (L"  - NPU Offloading: Active\n");
+    } else if (Intent == INTENT_SEMANTIC_QUERY) {
+       CONST CHAR16 *Explanation;
+       CONST CHAR16 *SettingName;
+       
+       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTCYAN, EFI_BLACK));
+       Status = LookupKnowledge(CleanInput, &Explanation, &SettingName);
+       if (!EFI_ERROR(Status)) {
+         Print (L"[aiBIOS Assistant] %s\n", Explanation);
+         Print (L"  Relevant Setting: [%s]\n", SettingName);
+       } else {
+         Print (L"[aiBIOS Assistant] I'm sorry, I don't have information on that topic yet. Try 'virtual machine' or 'secure boot'.\n");
+       }
     } else if (Intent == INTENT_UNKNOWN) {
        gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
-       Print (L"[aiBIOS] Intent ambiguous. Please clarify if you want to 'show status' or 'optimize'.\n");
+       Print (L"[aiBIOS] Intent ambiguous. Please clarify if you want to 'show status', 'optimize', or 'ask' a question.\n");
     } else {
       // AI Response Color (Green)
       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));

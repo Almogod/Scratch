@@ -43,6 +43,12 @@ AnalyzeSsdHealth (
   );
 
 EFI_STATUS
+PredictThermalTrend (
+  IN  CONST SENSOR_RING  *History,
+  OUT INT32              *PredictedDelta
+  );
+
+EFI_STATUS
 SetFanSpeed (
   IN UINT16  Rpm
   );

@@ -116,6 +116,37 @@ PollSensors (
 }
 
 EFI_STATUS
+PredictThermalTrend (
+  IN  CONST SENSOR_RING  *History,
+  OUT INT32              *PredictedDelta
+  )
+{
+  UINT32 i;
+  INT32  SumDelta = 0;
+
+  if (History == NULL || PredictedDelta == NULL) {
+    return EFI_INVALID_PARAMETER;
+  }
+
+  if (History->Count < 10) {
+    *PredictedDelta = 0;
+    return EFI_SUCCESS; // Not enough history
+  }
+
+  // Calculate average slope over last 10 samples
+  for (i = 1; i < 10; i++) {
+    UINT32 Curr = (History->Head + SENSOR_HISTORY_LEN - i) % SENSOR_HISTORY_LEN;
+    UINT32 Prev = (History->Head + SENSOR_HISTORY_LEN - i - 1) % SENSOR_HISTORY_LEN;
+    SumDelta += (INT32)History->Samples[Curr].Temperature - (INT32)History->Samples[Prev].Temperature;
+  }
+
+  *PredictedDelta = SumDelta / 9;
+  
+  DEBUG ((DEBUG_INFO, "[aiBIOS] Predicted Thermal Delta: %d\n", *PredictedDelta));
+  return EFI_SUCCESS;
+}
+
+EFI_STATUS
 SetFanSpeed (
   IN UINT16  Rpm
   )

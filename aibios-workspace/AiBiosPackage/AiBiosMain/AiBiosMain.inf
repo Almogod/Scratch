@@ -16,6 +16,8 @@
   ../SettingsTuner/ProfileTable.c
   ../NlInterface/NlInterface.c
   ../NlInterface/CommandParser.c
+  ../NlInterface/KnowledgeBase.c
+  ../Security/AnomalyGuard.c
   ../Tests/TestRunner.c
   ../Tests/TestInference.c
   ../Tests/TestTokenizer.c

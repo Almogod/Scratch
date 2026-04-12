@@ -13,7 +13,7 @@ STATIC QUANTIZED_VECTOR gNextHiddenState;
 
 // INTENT_SIGNATURES: Simulated output weights for the classifier head.
 // Must match the order of USER_INTENT enum in SettingsTuner.h
-STATIC CONST INT8 gIntentSignatures[8][EMBEDDING_DIM] = {
+STATIC CONST INT8 gIntentSignatures[13][EMBEDDING_DIM] = {
   { [0 ... EMBEDDING_DIM-1] = 40 },  // INTENT_GAMING       = 0
   { [0 ... EMBEDDING_DIM-1] = 30 },  // INTENT_ECO          = 1
   { [0 ... EMBEDDING_DIM-1] = 20 },  // INTENT_SILENT       = 2
@@ -22,7 +22,11 @@ STATIC CONST INT8 gIntentSignatures[8][EMBEDDING_DIM] = {
   { [0 ... EMBEDDING_DIM-1] = 10 },  // INTENT_DIAGNOSTIC   = 5
   { [0 ... EMBEDDING_DIM-1] = 70 },  // INTENT_FAN_TUNING   = 6
   { [0 ... EMBEDDING_DIM-1] = 0 },   // INTENT_UNKNOWN      = 7
-  { [0 ... EMBEDDING_DIM-1] = 60 }   // INTENT_STATUS_REPORT = 8
+  { [0 ... EMBEDDING_DIM-1] = 60 },  // INTENT_STATUS_REPORT = 8
+  { [0 ... EMBEDDING_DIM-1] = 80 },  // INTENT_SEMANTIC_QUERY = 9
+  { [0 ... EMBEDDING_DIM-1] = 90 },  // INTENT_AI_ACCEL      = 10
+  { [0 ... EMBEDDING_DIM-1] = -80 }, // INTENT_SEC_ANOMALY   = 11
+  { [0 ... EMBEDDING_DIM-1] = 100 }  // INTENT_PREDICTIVE_COOLING = 12
 };
 
 EFI_STATUS
@@ -106,7 +110,7 @@ PerformClassification (
   // We compute the "similarity" between the final hidden state and each intent signature.
   // This simulates the final linear layer (Logits = W_out * HiddenState).
   // We check all intents except UNKNOWN (which is a fallback).
-  for (i = 0; i < 9; i++) {
+  for (i = 0; i < 13; i++) {
     if (i == INTENT_UNKNOWN) continue;
 
     Score = 0;
@@ -190,6 +194,10 @@ LlmInferenceRun (
       if (Token == 5005) MockVal = 20; // silent -> SILENT pattern
       if (Token == 5011 || Token == 5001 || Token == 5023) MockVal = 10; // temp/thermal/thermals -> DIAGNOSTIC (or tuning)
       if (Token == 5012 || Token == 5022 || Token == 5020 || Token == 5021) MockVal = 70; // fan/rpm/inc/dec -> FAN_TUNING
+      
+      // New Semantic/AI Acceleration tokens
+      if (Token == 12199) MockVal = 80; // hello/question -> SEMANTIC_QUERY
+      if (Result->InputTokens[i] == '?' || Result->InputTokens[i] == 'W') MockVal = 80; // 'How', 'What', '?'
       
       if (MockVal != 0) {
         for (j = 0; j < EMBEDDING_DIM; j++) {
