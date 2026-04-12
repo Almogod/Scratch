@@ -14,14 +14,14 @@ STATIC QUANTIZED_VECTOR gNextHiddenState;
 // INTENT_SIGNATURES: Simulated output weights for the classifier head.
 // Must match the order of USER_INTENT enum in SettingsTuner.h
 STATIC CONST INT8 gIntentSignatures[8][EMBEDDING_DIM] = {
-  { [0 ... EMBEDDING_DIM-1] = 0x1A }, // INTENT_GAMING       = 0
-  { [0 ... EMBEDDING_DIM-1] = 0x2B }, // INTENT_ECO          = 1
-  { [0 ... EMBEDDING_DIM-1] = 0x33 }, // INTENT_SILENT       = 2
-  { [0 ... EMBEDDING_DIM-1] = 0x7F }, // INTENT_VIDEO_EDIT   = 3
-  { [0 ... EMBEDDING_DIM-1] = 0xF2 }, // INTENT_BATTERY      = 4
-  { [0 ... EMBEDDING_DIM-1] = 0x0A }, // INTENT_DIAGNOSTIC   = 5
-  { [0 ... EMBEDDING_DIM-1] = 0x00 }, // INTENT_UNKNOWN      = 6
-  { [0 ... EMBEDDING_DIM-1] = 0x01 }  // INTENT_STATUS_REPORT = 7
+  { [0 ... EMBEDDING_DIM-1] = 40 },  // INTENT_GAMING       = 0
+  { [0 ... EMBEDDING_DIM-1] = 30 },  // INTENT_ECO          = 1
+  { [0 ... EMBEDDING_DIM-1] = 20 },  // INTENT_SILENT       = 2
+  { [0 ... EMBEDDING_DIM-1] = 50 },  // INTENT_VIDEO_EDIT   = 3
+  { [0 ... EMBEDDING_DIM-1] = -40 }, // INTENT_BATTERY      = 4
+  { [0 ... EMBEDDING_DIM-1] = 10 },  // INTENT_DIAGNOSTIC   = 5
+  { [0 ... EMBEDDING_DIM-1] = 0 },   // INTENT_UNKNOWN      = 6
+  { [0 ... EMBEDDING_DIM-1] = 60 }   // INTENT_STATUS_REPORT = 7
 };
 
 EFI_STATUS
@@ -79,6 +79,18 @@ MultiHeadAttention (
   }
   
   DEBUG ((DEBUG_INFO, "[aiBIOS] Layer %d Attention pass complete\n", LayerIdx));
+}
+
+STATIC INT8
+SaturatedAdd (
+  INT8 a,
+  INT8 b
+  )
+{
+  INT16 Res = (INT16)a + (INT16)b;
+  if (Res > 127)  return 127;
+  if (Res < -128) return -128;
+  return (INT8)Res;
 }
 
 STATIC USER_INTENT
@@ -171,22 +183,24 @@ LlmInferenceRun (
     // If mock, synthesize an embedding for specific AI-relevant tokens
     if (gModelWeights[WeightOffset] == 0 && gModelWeights[WeightOffset + 1] == 0) {
       INT8 MockVal = 0;
-      if (Token == 5006) MockVal = 0x1A; // optimize -> GAMING pattern
-      if (Token == 5007) MockVal = 0x01; // status -> STATUS_REPORT pattern
-      if (Token == 5003) MockVal = 0xF2; // battery -> BATTERY pattern
-      if (Token == 5005) MockVal = 0x33; // silent -> SILENT pattern
+      if (Token == 5006) MockVal = 40; // optimize -> GAMING pattern
+      if (Token == 5007 || Token == 5010) MockVal = 60; // status/stats -> STATUS_REPORT
+      if (Token == 5003) MockVal = -40; // battery -> BATTERY pattern
+      if (Token == 5005) MockVal = 20; // silent -> SILENT pattern
+      if (Token == 5011 || Token == 5001) MockVal = 10; // temp/thermal -> DIAGNOSTIC
       
       if (MockVal != 0) {
         for (j = 0; j < EMBEDDING_DIM; j++) {
-          gHiddenState.Data[j] ^= MockVal;
+          gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], MockVal);
         }
         continue;
       }
     }
 
     // Normal weight XOR (for real weights or non-control mock tokens)
+    // Actually, switch to summation for normal path too in future
     for (j = 0; j < EMBEDDING_DIM; j++) {
-      gHiddenState.Data[j] ^= gModelWeights[(WeightOffset + j) % sizeof(gModelWeights)];
+      gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], (INT8)gModelWeights[(WeightOffset + j) % sizeof(gModelWeights)]);
     }
   }
 
@@ -211,7 +225,7 @@ LlmInferenceRun (
     
     // Residual connection
     for (j = 0; j < EMBEDDING_DIM; j++) {
-       gHiddenState.Data[j] += gNextHiddenState.Data[j];
+       gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], gNextHiddenState.Data[j]);
     }
   }
 
