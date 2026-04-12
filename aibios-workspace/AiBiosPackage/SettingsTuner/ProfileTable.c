@@ -12,6 +12,13 @@ STATIC CONST TUNING_PROFILE gLocalProfiles[] = {
   { INTENT_VIDEO_EDIT, 45, 0,  3200, 3, 105, TRUE  },
   // BATTERY: Minimum viable, deep C-states enabled
   { INTENT_BATTERY,    28, -25, 1866, 0, 45,  FALSE },
+  // v0.7 Meta Profiles (Mock defaults)
+  { INTENT_DIAGNOSTIC, 35, 0,  2133, 1, 65,  FALSE },
+  { INTENT_FAN_TUNING, 35, 0,  2400, 1, 95,  FALSE },
+  { INTENT_AI_ACCEL,   45, +5, 3200, 3, 125, TRUE  },
+  { INTENT_SEC_ANOMALY, 35, 0, 2133, 1, 65,  FALSE },
+  { INTENT_SEMANTIC_QUERY, 35, 0, 2133, 1, 65, FALSE },
+  { INTENT_PREDICTIVE_COOLING, 35, 0, 2400, 1, 95, FALSE }
 };
 
 EFI_STATUS

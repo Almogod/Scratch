@@ -14,19 +14,28 @@ STATIC QUANTIZED_VECTOR gNextHiddenState;
 // INTENT_SIGNATURES: Simulated output weights for the classifier head.
 // Must match the order of USER_INTENT enum in SettingsTuner.h
 STATIC CONST INT8 gIntentSignatures[13][EMBEDDING_DIM] = {
-  { [0 ... EMBEDDING_DIM-1] = 40 },  // INTENT_GAMING       = 0
-  { [0 ... EMBEDDING_DIM-1] = 30 },  // INTENT_ECO          = 1
-  { [0 ... EMBEDDING_DIM-1] = 20 },  // INTENT_SILENT       = 2
-  { [0 ... EMBEDDING_DIM-1] = 50 },  // INTENT_VIDEO_EDIT   = 3
-  { [0 ... EMBEDDING_DIM-1] = -40 }, // INTENT_BATTERY      = 4
-  { [0 ... EMBEDDING_DIM-1] = 10 },  // INTENT_DIAGNOSTIC   = 5
-  { [0 ... EMBEDDING_DIM-1] = 70 },  // INTENT_FAN_TUNING   = 6
-  { [0 ... EMBEDDING_DIM-1] = 0 },   // INTENT_UNKNOWN      = 7
-  { [0 ... EMBEDDING_DIM-1] = 60 },  // INTENT_STATUS_REPORT = 8
-  { [0 ... EMBEDDING_DIM-1] = 80 },  // INTENT_SEMANTIC_QUERY = 9
-  { [0 ... EMBEDDING_DIM-1] = 90 },  // INTENT_AI_ACCEL      = 10
-  { [0 ... EMBEDDING_DIM-1] = -80 }, // INTENT_SEC_ANOMALY   = 11
-  { [0 ... EMBEDDING_DIM-1] = 100 }  // INTENT_PREDICTIVE_COOLING = 12
+  // Tuning Channel [Indices 0-3]
+  { [0 ... 3] = 40,  [4 ... 15] = 0 }, // INTENT_GAMING       = 0
+  { [0 ... 3] = 30,  [4 ... 15] = 0 }, // INTENT_ECO          = 1
+  { [0 ... 3] = 20,  [4 ... 15] = 0 }, // INTENT_SILENT       = 2
+  { [0 ... 3] = 50,  [4 ... 15] = 0 }, // INTENT_VIDEO_EDIT   = 3
+  { [0 ... 3] = -40, [4 ... 15] = 0 }, // INTENT_BATTERY      = 4
+  { [0 ... 3] = 110, [4 ... 15] = 0 }, // INTENT_AI_ACCEL      = 10
+  { [0 ... 3] = 70,  [4 ... 15] = 0 }, // INTENT_FAN_TUNING   = 6
+
+  // Diagnostics Channel [Indices 4-7]
+  { [0 ... 3] = 0, [4 ... 7] = 60, [8 ... 15] = 0 }, // INTENT_STATUS_REPORT = 8
+  { [0 ... 3] = 0, [4 ... 7] = 40, [8 ... 15] = 0 }, // INTENT_DIAGNOSTIC    = 5
+
+  // Semantic Channel [Indices 8-11]
+  { [0 ... 7] = 0, [8 ... 11] = 80, [12 ... 15] = 0 }, // INTENT_SEMANTIC_QUERY = 9
+
+  // Security Channel [Indices 12-15]
+  { [0 ... 11] = 0, [12 ... 15] = 100 }, // INTENT_SEC_ANOMALY   = 11
+  
+  // Predictive/Misc
+  { [0 ... 15] = 0 },                  // INTENT_UNKNOWN      = 7
+  { [0 ... 11] = 0, [12 ... 15] = 50 }   // INTENT_PREDICTIVE_COOLING = 12
 };
 
 EFI_STATUS
@@ -187,25 +196,33 @@ LlmInferenceRun (
     // Check if we have real weights or mock weights (all zeros)
     // If mock, synthesize an embedding for specific AI-relevant tokens
     if (gModelWeights[WeightOffset] == 0 && gModelWeights[WeightOffset + 1] == 0) {
-      INT8 MockVal = 0;
-      if (Token == 5006) MockVal = 40; // optimize -> GAMING pattern
-      if (Token == 5007 || Token == 5010) MockVal = 60; // status/stats -> STATUS_REPORT
-      if (Token == 5003) MockVal = -40; // battery -> BATTERY pattern
-      if (Token == 5005) MockVal = 20; // silent -> SILENT pattern
-      if (Token == 5011 || Token == 5001 || Token == 5023) MockVal = 10; // temp/thermal/thermals -> DIAGNOSTIC (or tuning)
-      if (Token == 5012 || Token == 5022 || Token == 5020 || Token == 5021) MockVal = 70; // fan/rpm/inc/dec -> FAN_TUNING
-      
-      // New Semantic/AI Acceleration tokens (v0.6)
-      if (Token == 6001 || Token == 6002) MockVal = 95; // ai / development -> AI_ACCEL
-      if (Token == 6004 || Token == 6005 || Token == 6003) MockVal = 85; // virtual / machine / how -> SEMANTIC
-      if (Token == 6008 || Token == 6009) MockVal = -85; // check / security -> SEC_ANOMALY
-      
-      if (MockVal != 0) {
-        for (j = 0; j < EMBEDDING_DIM; j++) {
-          gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], MockVal);
-        }
-        continue;
+      if (Token == 5011 || Token == 5001 || Token == 5023) { // temp/thermal/thermals -> DIAGNOSTIC (or tuning)
+        for (j=4; j<8; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 40);
       }
+      if (Token == 5012 || Token == 5022 || Token == 5020 || Token == 5021) { // fan/rpm/inc/dec -> FAN_TUNING
+        for (j=0; j<4; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 70);
+      }
+      
+      if (Token == 5006) { 
+        for (j=0; j<4; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 40); // Tuning
+      }
+      if (Token == 5007 || Token == 5010) {
+        for (j=4; j<8; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 60); // Diagnostics
+      }
+      if (Token == 5003) {
+        for (j=0; j<4; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], -40); // Battery
+      }
+      if (Token == 6001 || Token == 6002) {
+        for (j=0; j<4; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 110); // AI_ACCEL
+      }
+      if (Token == 6004 || Token == 6005 || Token == 6003) {
+        for (j=8; j<12; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 100); // Semantic Query
+      }
+      if (Token == 6008 || Token == 6009) {
+        for (j=12; j<16; j++) gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], 100); // Security
+      }
+      
+      continue;
     }
 
     // Normal weight XOR (for real weights or non-control mock tokens)
