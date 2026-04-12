@@ -155,7 +155,28 @@ AiBiosMainEntry (
 
       Status = ApplyProfile(Intent);
       if (EFI_ERROR(Status)) {
-        Print(L"[aiBIOS] Failed to apply profile: %r\n", Status);
+        if (Intent == INTENT_FAN_TUNING) {
+           UINT16 CurrentRpm = 1200; // Simulated default
+           UINT16 TargetRpm = (UINT16)InfResult.OutputTokens[1];
+           INT32  Direction = InfResult.OutputTokens[2];
+
+           if (Direction == 1) { // Increase
+             TargetRpm = CurrentRpm + (TargetRpm ? TargetRpm : 500);
+           } else if (Direction == 2) { // Decrease
+             TargetRpm = (CurrentRpm > (TargetRpm ? TargetRpm : 500)) ? (CurrentRpm - (TargetRpm ? TargetRpm : 500)) : 500;
+           } else if (TargetRpm == 0) {
+              TargetRpm = 2000; // Default fallback for 'optimize fan'
+           }
+
+           Status = SetFanSpeed(TargetRpm);
+           if (!EFI_ERROR(Status)) {
+             Print(L"[aiBIOS] Fan speed adjusted to %d RPM.\n", TargetRpm);
+           } else {
+             Print(L"[aiBIOS] Failed to adjust fan speed: %r\n", Status);
+           }
+        } else {
+          Print(L"[aiBIOS] Failed to apply profile: %r\n", Status);
+        }
       } else {
         if (Intent == INTENT_GAMING) {
           Print(L"[aiBIOS] Performance boost applied. Thermal limits increased.\n");

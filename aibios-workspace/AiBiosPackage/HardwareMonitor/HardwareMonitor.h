@@ -42,4 +42,9 @@ AnalyzeSsdHealth (
   IN CONST SENSOR_SAMPLE *Latest
   );
 
+EFI_STATUS
+SetFanSpeed (
+  IN UINT16  Rpm
+  );
+
 #endif // AIBIOS_HARDWARE_MONITOR_H

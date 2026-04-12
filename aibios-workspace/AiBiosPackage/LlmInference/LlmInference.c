@@ -20,8 +20,9 @@ STATIC CONST INT8 gIntentSignatures[8][EMBEDDING_DIM] = {
   { [0 ... EMBEDDING_DIM-1] = 50 },  // INTENT_VIDEO_EDIT   = 3
   { [0 ... EMBEDDING_DIM-1] = -40 }, // INTENT_BATTERY      = 4
   { [0 ... EMBEDDING_DIM-1] = 10 },  // INTENT_DIAGNOSTIC   = 5
-  { [0 ... EMBEDDING_DIM-1] = 0 },   // INTENT_UNKNOWN      = 6
-  { [0 ... EMBEDDING_DIM-1] = 60 }   // INTENT_STATUS_REPORT = 7
+  { [0 ... EMBEDDING_DIM-1] = 70 },  // INTENT_FAN_TUNING   = 6
+  { [0 ... EMBEDDING_DIM-1] = 0 },   // INTENT_UNKNOWN      = 7
+  { [0 ... EMBEDDING_DIM-1] = 60 }   // INTENT_STATUS_REPORT = 8
 };
 
 EFI_STATUS
@@ -105,7 +106,7 @@ PerformClassification (
   // We compute the "similarity" between the final hidden state and each intent signature.
   // This simulates the final linear layer (Logits = W_out * HiddenState).
   // We check all intents except UNKNOWN (which is a fallback).
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < 9; i++) {
     if (i == INTENT_UNKNOWN) continue;
 
     Score = 0;
@@ -187,7 +188,8 @@ LlmInferenceRun (
       if (Token == 5007 || Token == 5010) MockVal = 60; // status/stats -> STATUS_REPORT
       if (Token == 5003) MockVal = -40; // battery -> BATTERY pattern
       if (Token == 5005) MockVal = 20; // silent -> SILENT pattern
-      if (Token == 5011 || Token == 5001) MockVal = 10; // temp/thermal -> DIAGNOSTIC
+      if (Token == 5011 || Token == 5001 || Token == 5023) MockVal = 10; // temp/thermal/thermals -> DIAGNOSTIC (or tuning)
+      if (Token == 5012 || Token == 5022 || Token == 5020 || Token == 5021) MockVal = 70; // fan/rpm/inc/dec -> FAN_TUNING
       
       if (MockVal != 0) {
         for (j = 0; j < EMBEDDING_DIM; j++) {
@@ -236,6 +238,39 @@ LlmInferenceRun (
   
   Result->OutputTokens[0] = PerformClassification(&gHiddenState);
   Result->OutputLen = 1;
+
+  // 4. Slot Filling / Parameter Extraction Head
+  // If the intent involves tuning, we scan for numeric parameters
+  if (Result->OutputTokens[0] == INTENT_FAN_TUNING) {
+    INT32 Value = 0;
+    INT32 Direction = 0; // 0=TO, 1=UP, 2=DOWN
+    BOOLEAN FoundValue = FALSE;
+
+    for (i = 0; i < TokenCount && i < MAX_INPUT_TOKENS; i++) {
+       INT32 T = Result->InputTokens[i];
+       if (T >= '0' && T <= '9') {
+         Value = Value * 10 + (T - '0');
+         FoundValue = TRUE;
+       } else if (T == 5020) { // increase
+         Direction = 1;
+       } else if (T == 5021) { // decrease
+         Direction = 2;
+       }
+    }
+
+    if (FoundValue) {
+      Result->OutputTokens[1] = Value;
+      Result->OutputTokens[2] = Direction;
+      Result->OutputLen = 3;
+    } else {
+      // Default step of 500 if no value found but direction specified
+      if (Direction != 0) {
+        Result->OutputTokens[1] = 500;
+        Result->OutputTokens[2] = Direction;
+        Result->OutputLen = 3;
+      }
+    }
+  }
 
   if (TokenCount == 0xFFFFFFFF) {
     QUANTIZED_VECTOR dummy;

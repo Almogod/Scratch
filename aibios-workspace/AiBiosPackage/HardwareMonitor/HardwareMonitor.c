@@ -114,3 +114,13 @@ PollSensors (
 
   return EFI_SUCCESS;
 }
+
+EFI_STATUS
+SetFanSpeed (
+  IN UINT16  Rpm
+  )
+{
+  DEBUG ((DEBUG_INFO, "[aiBIOS] Hardware Command: Set Fan RPM to %d\n", Rpm));
+  // In a real DXE driver, this would write to an I/O port or MSR
+  return EFI_SUCCESS;
+}
