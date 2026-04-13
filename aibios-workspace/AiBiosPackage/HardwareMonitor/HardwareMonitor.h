@@ -53,4 +53,9 @@ SetFanSpeed (
   IN UINT16  Rpm
   );
 
+EFI_STATUS
+VerifyHardwareState (
+  IN UINT32  TaskId
+  );
+
 #endif // AIBIOS_HARDWARE_MONITOR_H

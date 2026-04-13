@@ -13,6 +13,7 @@
 #include "../SettingsTuner/SettingsTuner.h"
 #include "../NlInterface/NlInterface.h"
 #include "../Security/Security.h"
+#include "AgencyEngine.h"
 
 #ifdef RUN_TESTS
 #include "../Tests/TestMain.h"
@@ -22,6 +23,7 @@ EFI_STATUS RunAllTests(VOID);
 // v0.9 Contextual Memory
 STATIC USER_INTENT gLastActionableIntent = INTENT_UNKNOWN;
 STATIC CHAR16      gLastSettingName[64] = {0};
+STATIC AGENT_PLAN  gActivePlan = {0};
 
 VOID
 DisplayStatus (
@@ -214,41 +216,18 @@ AiBiosMainEntry (
           Print (L"[aiBIOS] Intent ambiguous. Please clarify if you want to 'show status', 'optimize', or 'ask' a question.\n");
         }
     } else {
-      // AI Response Color (Green)
+      // v1.0 Enhanced Agency Trigger
       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
-
-      Status = ApplyProfile(Intent);
-      if (EFI_ERROR(Status)) {
-        if (Intent == INTENT_FAN_TUNING) {
-           UINT16 CurrentRpm = 1200; // Simulated default
-           UINT16 TargetRpm = (UINT16)InfResult.OutputTokens[1];
-           INT32  Direction = InfResult.OutputTokens[2];
-
-           if (Direction == 1) { // Increase
-             TargetRpm = CurrentRpm + (TargetRpm ? TargetRpm : 500);
-           } else if (Direction == 2) { // Decrease
-             TargetRpm = (CurrentRpm > (TargetRpm ? TargetRpm : 500)) ? (CurrentRpm - (TargetRpm ? TargetRpm : 500)) : 500;
-           } else if (TargetRpm == 0) {
-              TargetRpm = 2000; // Default fallback for 'optimize fan'
-           }
-
-           Status = SetFanSpeed(TargetRpm);
-           if (!EFI_ERROR(Status)) {
-             Print(L"[aiBIOS] Fan speed adjusted to %d RPM.\n", TargetRpm);
-           } else {
-             Print(L"[aiBIOS] Failed to adjust fan speed: %r\n", Status);
-           }
-        } else {
-          Print(L"[aiBIOS] Failed to apply profile: %r\n", Status);
+      
+      Status = InitializeAgentPlan(Intent, &gActivePlan);
+      if (!EFI_ERROR(Status)) {
+        Print(L"[aiBIOS Agency] Reasoned Plan Generated. Executing autonomous sequence...\n");
+        while (gActivePlan.IsActive) {
+          StepAgentPlan(&gActivePlan);
         }
+        Print(L"[aiBIOS Agency] Sequence Complete. Verified system state is stable.\n");
       } else {
-        if (Intent == INTENT_GAMING) {
-          Print(L"[aiBIOS] Performance boost applied. Thermal limits increased.\n");
-        } else if (Intent == INTENT_BATTERY) {
-          Print(L"[aiBIOS] Power saving mode active. Undervolting applied.\n");
-        } else {
-          Print(L"[aiBIOS] Profile updated successfully.\n");
-        }
+        Print(L"[aiBIOS ERROR] Failed to initialize agent plan.\n");
       }
     }
     
