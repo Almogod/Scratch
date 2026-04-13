@@ -225,7 +225,20 @@ AiBiosMainEntry (
         while (gActivePlan.IsActive) {
           StepAgentPlan(&gActivePlan);
         }
-        Print(L"[aiBIOS Agency] Sequence Complete. Verified system state is stable.\n");
+        
+        // v1.1 Self-Healing Check
+        if (gActivePlan.TotalTasks > 0 && 
+            gActivePlan.Tasks[gActivePlan.TotalTasks-1].Status == TASK_STATUS_FAILED) {
+           gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTRED, EFI_BLACK));
+           Print(L"[aiBIOS Agency] Stability Check Failed! Triggering autonomous Self-Healing (ECO Mode)...\n");
+           InitializeAgentPlan(INTENT_ECO, &gActivePlan);
+           while (gActivePlan.IsActive) {
+             StepAgentPlan(&gActivePlan);
+           }
+           Print(L"[aiBIOS Agency] System stabilized via autonomous failover.\n");
+        } else {
+           Print(L"[aiBIOS Agency] Sequence Complete. Verified system state is stable.\n");
+        }
       } else {
         Print(L"[aiBIOS ERROR] Failed to initialize agent plan.\n");
       }

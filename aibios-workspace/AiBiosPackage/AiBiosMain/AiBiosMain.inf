@@ -19,6 +19,7 @@
   ../NlInterface/CommandParser.c
   ../NlInterface/KnowledgeBase.c
   ../Security/AnomalyGuard.c
+  ../Security/VariableGroomer.c
   ../Tests/TestRunner.c
   ../Tests/TestInference.c
   ../Tests/TestTokenizer.c
@@ -40,6 +41,7 @@
   BaseLib
   BaseMemoryLib
   PcdLib
+  MemoryAllocationLib
 
 [Protocols]
   gEfiAcpiTableProtocolGuid

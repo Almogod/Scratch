@@ -3,6 +3,7 @@
 #include <Library/IoLib.h>
 #include <Library/TimerLib.h>
 #include <Library/DebugLib.h>
+#include <Library/UefiLib.h>
 #include "HardwareMonitor.h"
 
 COMPONENT_HEALTH

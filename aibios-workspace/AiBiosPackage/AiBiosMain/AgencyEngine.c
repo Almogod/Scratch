@@ -4,6 +4,9 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include "AgencyEngine.h"
 #include "../HardwareMonitor/HardwareMonitor.h"
+#include "../Security/Security.h"
+
+EFI_STATUS ScanAndCleanVariables (OUT UINT32 *CleanedCount); // Forward decl
 
 EFI_STATUS
 InitializeAgentPlan (
@@ -109,19 +112,51 @@ StepAgentPlan (
       break;
 
     case TASK_SECURE_Grooming:
-      Print(L"  - Scanning UEFI variables for entropy anomalies...\n");
-      Print(L"  - Identified 2 orphaned secure variables. Cleaning...\n");
-      Print(L"  - Secure state unified. [SUCCESS]\n");
-      Current->Status = TASK_STATUS_SUCCESS;
-      Plan->CurrentTaskIdx++;
+      {
+        UINT32 Cleaned;
+        Print(L"  - Executing real-time firmware variable scan...\n");
+        Status = ScanAndCleanVariables(&Cleaned);
+        if (!EFI_ERROR(Status)) {
+          Print(L"  - Grooming Complete: Removed %d orphaned/suspicious variables.\n", Cleaned);
+          Current->Status = TASK_STATUS_SUCCESS;
+          Plan->CurrentTaskIdx++;
+        } else {
+          Print(L"  - Grooming Failed: %r\n", Status);
+          Current->Status = TASK_STATUS_FAILED;
+          Plan->IsActive = FALSE;
+        }
+      }
       break;
 
     case TASK_THERMAL_STRESS_TEST:
-      Print(L"  - Initiating synthetic CPU load simulation (X64 instruction churn)...\n");
-      gBS->Stall(500000); // 0.5s stall to simulate "work"
-      Print(L"  - Monitoring thermal ramp... +4.2 C. Slope within safe bounds.\n");
-      Current->Status = TASK_STATUS_SUCCESS;
-      Plan->CurrentTaskIdx++;
+      {
+        SENSOR_SAMPLE Pre, Post;
+        UINT32 Junk = 0x12345678;
+        
+        Print(L"  - Taking baseline thermal reading...\n");
+        PollSensors(&Pre);
+        
+        Print(L"  - Running 1-second IA32 computational stress pass...\n");
+        // Real CPU churn: 10M iterations of fixed-point arithmetic
+        for (UINTN i = 0; i < 10000000; i++) {
+          Junk = (Junk * 1103515245 + 12345) & 0x7FFFFFFF;
+        }
+        
+        PollSensors(&Post);
+        INT32 Delta = (INT32)Post.Temperature - (INT32)Pre.Temperature;
+        
+        Print(L"  - Thermal Delta: +%d.%d C\n", Delta/10, Delta%10);
+        
+        if (Delta < 100) { // Safety Threshold: 10.0 C
+          Print(L"  - Verification Success: Delta within stability limits.\n");
+          Current->Status = TASK_STATUS_SUCCESS;
+          Plan->CurrentTaskIdx++;
+        } else {
+          Print(L"  - Verification Failed: Thermal delta too high (%d.%d C)!\n", Delta/10, Delta%10);
+          Current->Status = TASK_STATUS_FAILED;
+          Plan->IsActive = FALSE;
+        }
+      }
       break;
 
     default:
