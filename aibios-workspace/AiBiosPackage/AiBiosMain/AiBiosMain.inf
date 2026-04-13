@@ -8,6 +8,7 @@
 
 [Sources]
   AiBiosMain.c
+  AgencyEngine.c
   ../LlmInference/LlmInference.c
   ../LlmInference/Tokenizer.c
   ../HardwareMonitor/HardwareMonitor.c
