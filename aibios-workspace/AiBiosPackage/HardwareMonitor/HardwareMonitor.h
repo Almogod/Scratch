@@ -58,4 +58,10 @@ VerifyHardwareState (
   IN UINT32  TaskId
   );
 
+BOOLEAN
+IsThermalCritical (
+  IN  CONST SENSOR_RING  *History,
+  OUT INT16              *Confidence
+  );
+
 #endif // AIBIOS_HARDWARE_MONITOR_H

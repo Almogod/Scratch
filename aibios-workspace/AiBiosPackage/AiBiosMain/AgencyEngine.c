@@ -83,6 +83,16 @@ StepAgentPlan (
   Print(L"[aiBIOS Agency] Task %d/%d: %s...\n", 
         Plan->CurrentTaskIdx + 1, Plan->TotalTasks, Current->Description);
 
+  // Proactive Trajectory Check before every task
+  INT16 Confidence;
+  extern SENSOR_RING gSensorHistory; 
+  if (IsThermalCritical(&gSensorHistory, &Confidence)) {
+    Print(L"  [CRITICAL] Thermal Trajectory Alert (Confidence %d%%)!\n", Confidence);
+    Print(L"  - Forcing Emergency System Halt for hardware protection...\n");
+    gBS->Stall(500000); 
+    CpuDeadLoop(); // Emergency Halt
+  }
+
   switch (Current->Type) {
     case TASK_APPLY_PROFILE:
       Status = ApplyProfile(Current->RelatedIntent);

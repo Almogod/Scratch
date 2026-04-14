@@ -24,6 +24,7 @@ EFI_STATUS RunAllTests(VOID);
 STATIC USER_INTENT gLastActionableIntent = INTENT_UNKNOWN;
 STATIC CHAR16      gLastSettingName[64] = {0};
 STATIC AGENT_PLAN  gActivePlan = {0};
+SENSOR_RING         gSensorHistory = {0}; // Elevated to global for cross-module trajectory analysis
 
 VOID
 DisplayStatus (
@@ -33,7 +34,6 @@ DisplayStatus (
   SENSOR_SAMPLE Latest;
   EFI_STATUS    Status;
   INT32         PredictedDelta;
-  STATIC SENSOR_RING History = {0};
 
   Status = PollSensors (&Latest);
   if (Status == EFI_NOT_FOUND) {
@@ -44,34 +44,47 @@ DisplayStatus (
   }
 
   // Update history for trend analysis
-  History.Samples[History.Head] = Latest;
-  History.Head = (History.Head + 1) % SENSOR_HISTORY_LEN;
-  if (History.Count < SENSOR_HISTORY_LEN) History.Count++;
+  gSensorHistory.Samples[gSensorHistory.Head] = Latest;
+  gSensorHistory.Head = (gSensorHistory.Head + 1) % SENSOR_HISTORY_LEN;
+  if (gSensorHistory.Count < SENSOR_HISTORY_LEN) gSensorHistory.Count++;
 
-  Print (L"\n--- [aiBIOS Telemetry Dashboard] ---\n");
-  Print (L"  CPU Temperature: %d.%d C\n", Latest.Temperature / 10, Latest.Temperature % 10);
-  Print (L"  Fan Speed:       %d RPM\n", Latest.FanRpm);
-  Print (L"  CPU Voltage:     %d mV\n", Latest.CpuVoltage);
-  Print (L"  SSD Wear:        %d %%\n", Latest.SsdWearPct);
+  PredictThermalTrend(&gSensorHistory, &PredictedDelta);
+
+  Print (L"  \x250C\x2500\x2500\x2500 [ aiBIOS Telemetry Dashboard ] \x2500\x2500\x2500\x2510\n");
   
-  PredictThermalTrend(&History, &PredictedDelta);
+  gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTCYAN, EFI_BLACK));
+  Print (L"  \x2502 CPU Temperature:  %3d.%d C           \x2502\n", Latest.Temperature / 10, Latest.Temperature % 10);
+  Print (L"  \x2502 Fan Speed:        %4d RPM             \x2502\n", Latest.FanRpm);
+  Print (L"  \x2502 CPU Voltage:      %4d mV              \x2502\n", Latest.CpuVoltage);
+  Print (L"  \x2502 SSD Wear:         %3d %%               \x2502\n", Latest.SsdWearPct);
+  
+  Print (L"  \x251C\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2524\n");
+  
   if (PredictedDelta > 5) {
-     Print (L"  Thermal Trend:   [SPIKE] Rising rapidly (%d.%d C/tick)\n", PredictedDelta/10, PredictedDelta%10);
+     gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTRED, EFI_BLACK));
+     Print (L"  \x2502 Thermal Trend:    [SPIKE] (+%d.%d/tick)  \x2502\n", PredictedDelta/10, PredictedDelta%10);
   } else if (PredictedDelta < -5) {
-     Print (L"  Thermal Trend:   [COOLING] Falling (%d.%d C/tick)\n", (-PredictedDelta)/10, (-PredictedDelta)%10);
+     gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
+     Print (L"  \x2502 Thermal Trend:    [COOLING] (-%d.%d/tick)\x2502\n", (-PredictedDelta)/10, (-PredictedDelta)%10);
   } else {
-     Print (L"  Thermal Trend:   [STABLE]\n");
+     gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
+     Print (L"  \x2502 Thermal Trend:    [STABLE]            \x2502\n");
   }
 
   COMPONENT_HEALTH SsdHealth = AnalyzeSsdHealth(&Latest);
   if (SsdHealth == HEALTH_CRITICAL) {
-    Print (L"  SSD Health:      [CRITICAL] - Replacement Recommended\n");
+    gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTRED, EFI_BLACK));
+    Print (L"  \x2502 SSD Health:       [CRITICAL] Error!   \x2502\n");
   } else if (SsdHealth == HEALTH_WARNING) {
-    Print (L"  SSD Health:      [WARNING] - High wear detected\n");
+    gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
+    Print (L"  \x2502 SSD Health:       [WARNING] Wear Up   \x2502\n");
   } else {
-    Print (L"  SSD Health:      [OK]\n");
+    gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTCYAN, EFI_BLACK));
+    Print (L"  \x2502 SSD Health:       [OPTIMAL]           \x2502\n");
   }
-  Print (L"------------------------------------\n\n");
+  
+  gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGRAY, EFI_BLACK));
+  Print (L"  \x2514\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2518\n\n");
 }
 
 EFI_STATUS
@@ -143,6 +156,24 @@ AiBiosMainEntry (
       Print (L"  help   - Show this help\n");
       Print (L"  exit   - Exit aiBIOS\n");
       Print (L"  <text> - Ask AI to optimize your system\n");
+      
+      if (gLastActionableIntent != INTENT_UNKNOWN) {
+        gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTCYAN, EFI_BLACK));
+        Print (L"Contextual Suggestion:\n");
+        Print (L"  - You previously asked about '%s'.\n", gLastSettingName);
+        Print (L"  - Try 'apply settings' or 'is it active?'\n");
+        gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGRAY, EFI_BLACK));
+      }
+      continue;
+    }
+
+    if (StrCmp (InputBuffer, L"debug spike") == 0) {
+      extern SENSOR_RING gSensorHistory;
+      Print (L"[DEBUG] Injecting artificial thermal runaway trajectory...\n");
+      for (UINT32 i = 0; i < SENSOR_HISTORY_LEN; i++) {
+        gSensorHistory.Samples[i].Temperature = 500 + (i * 100); // Rapidly rising
+      }
+      gSensorHistory.Count = SENSOR_HISTORY_LEN;
       continue;
     }
 
