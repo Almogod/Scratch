@@ -136,11 +136,18 @@ StepAgentPlan (
         Print(L"  - Taking baseline thermal reading...\n");
         PollSensors(&Pre);
         
-        Print(L"  - Running 1-second IA32 computational stress pass...\n");
-        // Real CPU churn: 10M iterations of fixed-point arithmetic
-        for (UINTN i = 0; i < 10000000; i++) {
-          Junk = (Junk * 1103515245 + 12345) & 0x7FFFFFFF;
+        Print(L"  - Running IA32 computational stress pass (500ms)...\n");
+        
+        // Use MicroSecondDelay for predictable duration across different CPUs
+        for (UINT32 Step = 0; Step < 5; Step++) {
+           Print(L"    [Stress %d%%] Churning arithmetic units...\r", (Step+1)*20);
+           // Real CPU churn: 1M iterations of fixed-point arithmetic per step
+           for (UINTN i = 0; i < 1000000; i++) {
+             Junk = (Junk * 1103515245 + 12345) & 0x7FFFFFFF;
+           }
+           gBS->Stall(100000); // 100ms delay per step (100,000 us)
         }
+        Print(L"\n");
         
         PollSensors(&Post);
         INT32 Delta = (INT32)Post.Temperature - (INT32)Pre.Temperature;

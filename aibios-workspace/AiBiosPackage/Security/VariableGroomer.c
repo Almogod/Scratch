@@ -43,10 +43,24 @@ ScanAndCleanVariables (
     }
 
     // Heuristic for "Orphaned" or "Suspicious" variables:
-    // 1. Variables in 'Setup' GUID that are unusually sized (simulated logic)
+    // 1. Variables in 'Setup' GUID that are unusually sized (>4KB)
     // 2. Mock 'OldLogs' or 'TestVar' names
+    
+    // Check Size
+    UINTN  DataSize = 0;
+    Status = gRT->GetVariable(Name, &Guid, NULL, &DataSize, NULL);
+    
+    BOOLEAN ShouldClean = FALSE;
     if (StrStr (Name, L"OldLog") != NULL || StrStr (Name, L"TestVar") != NULL) {
-      DEBUG ((DEBUG_INFO, "[aiBIOS Security] Orphaned variable detected: %s. Cleaning...\n", Name));
+      ShouldClean = TRUE;
+    } else if (DataSize > 4096 && StrLen(Name) < 32) {
+      // Unusually large data for a short variable name — possible overflow/tampering
+      DEBUG ((DEBUG_WARN, "[aiBIOS Security] Suspicious variable size (%d bytes) for %s!\n", DataSize, Name));
+      ShouldClean = TRUE;
+    }
+
+    if (ShouldClean) {
+      DEBUG ((DEBUG_INFO, "[aiBIOS Security] Cleaning suspicious variable: %s...\n", Name));
       
       // Autonomous Cleanup
       Status = gRT->SetVariable (Name, &Guid, 0, 0, NULL);

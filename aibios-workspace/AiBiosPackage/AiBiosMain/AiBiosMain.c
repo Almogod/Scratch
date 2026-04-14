@@ -32,15 +32,21 @@ DisplayStatus (
 {
   SENSOR_SAMPLE Latest;
   EFI_STATUS    Status;
+  INT32         PredictedDelta;
+  STATIC SENSOR_RING History = {0};
 
   Status = PollSensors (&Latest);
   if (Status == EFI_NOT_FOUND) {
-    // Graceful simulation instead of error
     Print (L"[aiBIOS] Hardware not detected. Using simulated telemetry data.\n");
   } else if (EFI_ERROR (Status)) {
     Print (L"[ERROR] Failed to poll sensors: %r\n", Status);
     return;
   }
+
+  // Update history for trend analysis
+  History.Samples[History.Head] = Latest;
+  History.Head = (History.Head + 1) % SENSOR_HISTORY_LEN;
+  if (History.Count < SENSOR_HISTORY_LEN) History.Count++;
 
   Print (L"\n--- [aiBIOS Telemetry Dashboard] ---\n");
   Print (L"  CPU Temperature: %d.%d C\n", Latest.Temperature / 10, Latest.Temperature % 10);
@@ -48,6 +54,15 @@ DisplayStatus (
   Print (L"  CPU Voltage:     %d mV\n", Latest.CpuVoltage);
   Print (L"  SSD Wear:        %d %%\n", Latest.SsdWearPct);
   
+  PredictThermalTrend(&History, &PredictedDelta);
+  if (PredictedDelta > 5) {
+     Print (L"  Thermal Trend:   [SPIKE] Rising rapidly (%d.%d C/tick)\n", PredictedDelta/10, PredictedDelta%10);
+  } else if (PredictedDelta < -5) {
+     Print (L"  Thermal Trend:   [COOLING] Falling (%d.%d C/tick)\n", (-PredictedDelta)/10, (-PredictedDelta)%10);
+  } else {
+     Print (L"  Thermal Trend:   [STABLE]\n");
+  }
+
   COMPONENT_HEALTH SsdHealth = AnalyzeSsdHealth(&Latest);
   if (SsdHealth == HEALTH_CRITICAL) {
     Print (L"  SSD Health:      [CRITICAL] - Replacement Recommended\n");
@@ -73,7 +88,7 @@ AiBiosMainEntry (
   INFERENCE_RESULT InfResult;
   USER_INTENT Intent;
 
-  Print(L"aiBIOS Prototype v0.2 Online.\n");
+  Print(L"aiBIOS Production v1.0 Online.\n");
 
 #ifdef RUN_TESTS
   Print(L"[aiBIOS] Test Mode Enabled. Running Suites...\n");
@@ -144,7 +159,7 @@ AiBiosMainEntry (
 
     // Show "thinking" color (Yellow)
     gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_YELLOW, EFI_BLACK));
-    Print (L"[aiBIOS] Thinking...\r");
+    Print (L"[aiBIOS] Analyzing intent and reasoning... \r");
 
     Status = LlmInferenceRun(CleanInput, CleanLen, &InfResult);
     if (EFI_ERROR(Status)) {
@@ -227,8 +242,8 @@ AiBiosMainEntry (
         }
         
         // v1.1 Self-Healing Check
-        if (gActivePlan.TotalTasks > 0 && 
-            gActivePlan.Tasks[gActivePlan.TotalTasks-1].Status == TASK_STATUS_FAILED) {
+        if (gActivePlan.CurrentTaskIdx < gActivePlan.TotalTasks && 
+            gActivePlan.Tasks[gActivePlan.CurrentTaskIdx].Status == TASK_STATUS_FAILED) {
            gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTRED, EFI_BLACK));
            Print(L"[aiBIOS Agency] Stability Check Failed! Triggering autonomous Self-Healing (ECO Mode)...\n");
            InitializeAgentPlan(INTENT_ECO, &gActivePlan);

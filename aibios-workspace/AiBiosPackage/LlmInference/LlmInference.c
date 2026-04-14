@@ -69,30 +69,17 @@ MatMulInt8 (
 
   for (i = 0; i < M; i++) {
     Acc = 0;
-    for (j = 0; j < K; j++) {
-      Acc += (INT32)Weight[i * K + j] * (INT32)Input[j];
+    if (Weight != NULL && Input != NULL) {
+      for (j = 0; j < K; j++) {
+        Acc += (INT32)Weight[i * K + j] * (INT32)Input[j];
+      }
     }
-    Acc = (Acc * (INT32)ScaleFactor) >> 16;
+    // Fixed-point scaling with rounding
+    Acc = ((Acc * (INT32)ScaleFactor) + 0x8000) >> 16;
     if (Acc > 127)  Acc = 127;
     if (Acc < -128) Acc = -128;
     Output[i] = (INT8)Acc;
   }
-}
-
-STATIC VOID
-MultiHeadAttention (
-  IN OUT QUANTIZED_VECTOR  *X,
-  IN     UINT32             LayerIdx,
-  IN     UINT32             SeqLen
-  )
-{
-  // SECURITY: SeqLen must be validated before entry
-  if (SeqLen > KV_CACHE_SIZE || LayerIdx >= NUM_LAYERS) {
-    ASSERT(FALSE);
-    return;
-  }
-  
-  DEBUG ((DEBUG_INFO, "[aiBIOS] Layer %d Attention pass complete\n", LayerIdx));
 }
 
 STATIC INT8
@@ -105,6 +92,51 @@ SaturatedAdd (
   if (Res > 127)  return 127;
   if (Res < -128) return -128;
   return (INT8)Res;
+}
+
+STATIC VOID
+MultiHeadAttention (
+  IN OUT QUANTIZED_VECTOR  *X,
+  IN     UINT32             LayerIdx,
+  IN     UINT32             SeqLen
+  )
+{
+  UINT32 pos, d;
+  INT32  Score;
+  STATIC INT32 AttnOut[EMBEDDING_DIM];
+
+  if (SeqLen > KV_CACHE_SIZE || LayerIdx >= NUM_LAYERS || X == NULL) {
+    return;
+  }
+  
+  // 1. Update KV Cache for current position (simplified: Q=K=V=X)
+  CopyMem(&gKvCache[LayerIdx][0][0].Data, X->Data, EMBEDDING_DIM); // K
+  CopyMem(&gKvCache[LayerIdx][0][1].Data, X->Data, EMBEDDING_DIM); // V
+
+  // 2. Compute Dot-Product Attention over the cache
+  ZeroMem(AttnOut, sizeof(AttnOut));
+
+  // We simulate attending to the first few tokens of the prompt 
+  for (pos = 0; pos < SeqLen && pos < 16; pos++) {
+    Score = 0;
+    for (d = 0; d < EMBEDDING_DIM; d++) {
+      Score += (INT32)X->Data[d] * (INT32)gKvCache[LayerIdx][pos][0].Data[d];
+    }
+    
+    // Softmax-like weighted sum (simplified for INT8/UEFI)
+    if (Score > 1000) {
+      for (d = 0; d < EMBEDDING_DIM; d++) {
+        AttnOut[d] += (INT32)gKvCache[LayerIdx][pos][1].Data[d];
+      }
+    }
+  }
+
+  // 3. Residual connection and saturation back to X
+  for (d = 0; d < EMBEDDING_DIM; d++) {
+    X->Data[d] = SaturatedAdd(X->Data[d], (INT8)(AttnOut[d] / 16));
+  }
+
+  DEBUG ((DEBUG_VERBOSE, "[aiBIOS] Layer %d Attention pass complete\n", LayerIdx));
 }
 
 STATIC USER_INTENT

@@ -99,20 +99,28 @@ PollSensors (
     MicroSecondDelay (10);
   }
   
-  if (Timeout == 0) {
-    // If we transition out of wait, and still nothing, we return the simulation anyway
-    // but with a slight "jitter" to indicate dynamic data.
-    Latest->Temperature = 420 + (IoRead8(0x40) % 20); // 42.0 - 44.0 C
-    Latest->FanRpm = 1800 + (IoRead8(0x40) % 100);
-    Latest->CpuVoltage = 1100;
-    Latest->SsdWearPct = 3;
+  // Case: Success reading real EC (mocked as always timeout for now in simulation)
+  if (Timeout != 0) {
+    // Real hardware reads would go here
+    Latest->Temperature = 450;
+    Latest->FanRpm      = 2000;
+    Latest->CpuVoltage  = 1200;
+    Latest->SsdWearPct  = 0;
     return EFI_SUCCESS;
   }
 
-  Latest->Temperature = 450;
-  Latest->FanRpm = 2000;
-  Latest->CpuVoltage = 1200;
-  Latest->SsdWearPct = 0;
+  // Case: Timeout or Simulation mode
+  // Simulated Heat Buildup Logic (for Stress Tests)
+  STATIC INT32 SimulatedTemp = 385;
+  
+  SimulatedTemp += (IoRead8(0x40) % 5) - 2; // Random walk +/- 0.2C
+  if (SimulatedTemp < 350) SimulatedTemp = 350;
+  if (SimulatedTemp > 950) SimulatedTemp = 950;
+
+  Latest->Temperature = (UINT16)SimulatedTemp;
+  Latest->FanRpm      = 1200 + (SimulatedTemp - 385) * 4;
+  Latest->CpuVoltage  = 1050;
+  Latest->SsdWearPct  = 2;
 
   return EFI_SUCCESS;
 }
@@ -125,26 +133,30 @@ PredictThermalTrend (
 {
   UINT32 i;
   INT32  SumDelta = 0;
+  UINT32 Window;
 
   if (History == NULL || PredictedDelta == NULL) {
     return EFI_INVALID_PARAMETER;
   }
 
-  if (History->Count < 10) {
+  // Use up to 1/4 of history length for trend window
+  Window = (History->Count < SENSOR_HISTORY_LEN / 4) ? History->Count : (SENSOR_HISTORY_LEN / 4);
+
+  if (Window < 2) {
     *PredictedDelta = 0;
-    return EFI_SUCCESS; // Not enough history
+    return EFI_SUCCESS;
   }
 
-  // Calculate average slope over last 10 samples
-  for (i = 1; i < 10; i++) {
+  // Calculate average slope over the window
+  for (i = 1; i < Window; i++) {
     UINT32 Curr = (History->Head + SENSOR_HISTORY_LEN - i) % SENSOR_HISTORY_LEN;
     UINT32 Prev = (History->Head + SENSOR_HISTORY_LEN - i - 1) % SENSOR_HISTORY_LEN;
     SumDelta += (INT32)History->Samples[Curr].Temperature - (INT32)History->Samples[Prev].Temperature;
   }
 
-  *PredictedDelta = SumDelta / 9;
+  *PredictedDelta = SumDelta / (INT32)(Window - 1);
   
-  DEBUG ((DEBUG_INFO, "[aiBIOS] Predicted Thermal Delta: %d\n", *PredictedDelta));
+  DEBUG ((DEBUG_INFO, "[aiBIOS] Predicted Thermal Delta: %d over window %d\n", *PredictedDelta, Window));
   return EFI_SUCCESS;
 }
 

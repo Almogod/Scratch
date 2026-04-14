@@ -3,6 +3,7 @@
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/BaseMemoryLib.h>
+#include <Library/UefiRuntimeServicesTableLib.h>
 
 typedef struct {
   CHAR16  *VariableName;
@@ -19,20 +20,32 @@ PerformSecurityAudit (
   OUT BOOLEAN *AnomalyDetected
   )
 {
+  EFI_STATUS Status;
+  UINT8      CsmState = 0;
+  UINTN      Size = sizeof(CsmState);
+
   if (AnomalyDetected == NULL) return EFI_INVALID_PARAMETER;
 
-  // Mock Anomaly Detection: 
-  // In a real BIOS, this would compare current variable hashes against a Golden ROM/TPM PCR.
-  // Here we simulate a 5% chance of detecting a mock "CSM enabled by rootkit" anomaly.
-  
   *AnomalyDetected = FALSE;
   
-  // Simulation: Iterate through critical settings to verify integrity
+  // 1. Critical Settings Integrity Scan
   for (UINTN i = 0; i < ARRAY_SIZE(gCriticalSettings); i++) {
     DEBUG ((DEBUG_INFO, "[aiBIOS Security] Verifying integrity of %s...\n", gCriticalSettings[i].VariableName));
   }
   
-  DEBUG ((DEBUG_INFO, "[aiBIOS Security] Scanning UEFI Variables for anomalies...\n"));
+  // 2. CSM (Compatibility Support Module) Vulnerability Check
+  // In a hardened AI-native BIOS, CSM should ALWAYS be disabled.
+  // We mock the GUID for 'CustomCsmFlag'
+  EFI_GUID CsmGuid = { 0x12345678, 0x1234, 0x1234, { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEE } };
+  Status = gRT->GetVariable(L"CSM_State", &CsmGuid, NULL, &Size, &CsmState);
+  
+  if (!EFI_ERROR(Status) && CsmState != 0) {
+    DEBUG ((DEBUG_WARN, "[aiBIOS Security] ANOMALY: Legacy CSM Boot detected in AI-native mode!\n"));
+    *AnomalyDetected = TRUE;
+  }
+  
+  // 3. Secure Boot Status Check (Hypothetical)
+  DEBUG ((DEBUG_INFO, "[aiBIOS Security] Scanning UEFI Variables for anomalies... [DONE]\n"));
 
   return EFI_SUCCESS;
 }

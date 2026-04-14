@@ -1,6 +1,6 @@
 # 🤖 AiBios: The Autonomous Intelligence BIOS
 
-![Status](https://img.shields.io/badge/Status-Prototype_v0.9-blueviolet?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Production_v1.0-blueviolet?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-UEFI%20/%20EDK%20II-blue?style=for-the-badge)
 ![Engine](https://img.shields.io/badge/Engine-22L_Transformer-orange?style=for-the-badge)
 

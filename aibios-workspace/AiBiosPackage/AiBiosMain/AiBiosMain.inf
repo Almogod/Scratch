@@ -42,6 +42,8 @@
   BaseMemoryLib
   PcdLib
   MemoryAllocationLib
+  UefiRuntimeServicesTableLib
+  UefiBootServicesTableLib
 
 [Protocols]
   gEfiAcpiTableProtocolGuid
