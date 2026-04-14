@@ -44,6 +44,7 @@
   MemoryAllocationLib
   UefiRuntimeServicesTableLib
   UefiBootServicesTableLib
+  PrintLib
 
 [Protocols]
   gEfiAcpiTableProtocolGuid

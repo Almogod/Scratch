@@ -2,6 +2,7 @@
 #include <Library/UefiLib.h>
 #include <Library/DebugLib.h>
 #include <Library/UefiBootServicesTableLib.h>
+#include <Library/PrintLib.h>
 #include "AgencyEngine.h"
 #include "../HardwareMonitor/HardwareMonitor.h"
 #include "../Security/Security.h"

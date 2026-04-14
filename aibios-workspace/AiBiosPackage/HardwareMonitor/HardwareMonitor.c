@@ -5,6 +5,7 @@
 #include <Library/DebugLib.h>
 #include <Library/UefiLib.h>
 #include "HardwareMonitor.h"
+#include "../SettingsTuner/SettingsTuner.h"
 
 COMPONENT_HEALTH
 AnalyzeFanHealth (

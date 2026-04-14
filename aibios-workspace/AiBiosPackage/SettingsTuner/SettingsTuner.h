@@ -49,6 +49,12 @@ SafeWriteMsr (
   );
 
 EFI_STATUS
+GetProfileByIntent (
+  IN  USER_INTENT      Intent,
+  OUT TUNING_PROFILE   **Profile
+  );
+
+EFI_STATUS
 TuneHardwareParameter (
   IN UINT32  Type,
   IN INT32   Value
