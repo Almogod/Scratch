@@ -14,28 +14,19 @@ STATIC QUANTIZED_VECTOR gNextHiddenState;
 // INTENT_SIGNATURES: Simulated output weights for the classifier head.
 // Must match the order of USER_INTENT enum in SettingsTuner.h
 STATIC CONST INT8 gIntentSignatures[13][EMBEDDING_DIM] = {
-  // Tuning Channel [Indices 0-3]
   { [0 ... 3] = 40,  [4 ... 15] = 0 }, // INTENT_GAMING       = 0
   { [0 ... 3] = 30,  [4 ... 15] = 0 }, // INTENT_ECO          = 1
   { [0 ... 3] = 20,  [4 ... 15] = 0 }, // INTENT_SILENT       = 2
   { [0 ... 3] = 50,  [4 ... 15] = 0 }, // INTENT_VIDEO_EDIT   = 3
   { [0 ... 3] = -40, [4 ... 15] = 0 }, // INTENT_BATTERY      = 4
-  { [0 ... 3] = 110, [4 ... 15] = 0 }, // INTENT_AI_ACCEL      = 10
+  { [0 ... 3] = 0,   [4 ... 7] = 40,  [8 ... 15] = 0 }, // INTENT_DIAGNOSTIC = 5
   { [0 ... 3] = 70,  [4 ... 15] = 0 }, // INTENT_FAN_TUNING   = 6
-
-  // Diagnostics Channel [Indices 4-7]
-  { [0 ... 3] = 0, [4 ... 7] = 60, [8 ... 15] = 0 }, // INTENT_STATUS_REPORT = 8
-  { [0 ... 3] = 0, [4 ... 7] = 40, [8 ... 15] = 0 }, // INTENT_DIAGNOSTIC    = 5
-
-  // Semantic Channel [Indices 8-11]
-  { [0 ... 7] = 0, [8 ... 11] = 80, [12 ... 15] = 0 }, // INTENT_SEMANTIC_QUERY = 9
-
-  // Security Channel [Indices 12-15]
-  { [0 ... 11] = 0, [12 ... 15] = 100 }, // INTENT_SEC_ANOMALY   = 11
-  
-  // Predictive/Misc
   { [0 ... 15] = 0 },                  // INTENT_UNKNOWN      = 7
-  { [0 ... 11] = 0, [12 ... 15] = 50 }   // INTENT_PREDICTIVE_COOLING = 12
+  { [0 ... 3] = 0,   [4 ... 7] = 60,  [8 ... 15] = 0 }, // INTENT_STATUS_REPORT = 8
+  { [0 ... 7] = 0,   [8 ... 11] = 80, [12 ... 15] = 0 }, // INTENT_SEMANTIC_QUERY = 9
+  { [0 ... 3] = 110, [4 ... 15] = 0 }, // INTENT_AI_ACCEL      = 10
+  { [0 ... 11] = 0,  [12 ... 15] = 100 }, // INTENT_SEC_ANOMALY = 11
+  { [0 ... 11] = 0,  [12 ... 15] = 50 }   // INTENT_PREDICTIVE_COOLING = 12
 };
 
 EFI_STATUS

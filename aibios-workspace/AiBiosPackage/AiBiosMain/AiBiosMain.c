@@ -265,7 +265,7 @@ AiBiosMainEntry (
       // v1.0 Enhanced Agency Trigger
       gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTGREEN, EFI_BLACK));
       
-      Status = InitializeAgentPlan(Intent, &gActivePlan);
+      Status = InitializeAgentPlan(Intent, (INT32)InfResult.OutputTokens[1], &gActivePlan);
       if (!EFI_ERROR(Status)) {
         Print(L"[aiBIOS Agency] Reasoned Plan Generated. Executing autonomous sequence...\n");
         while (gActivePlan.IsActive) {
@@ -277,7 +277,7 @@ AiBiosMainEntry (
             gActivePlan.Tasks[gActivePlan.CurrentTaskIdx].Status == TASK_STATUS_FAILED) {
            gST->ConOut->SetAttribute (gST->ConOut, EFI_TEXT_ATTR(EFI_LIGHTRED, EFI_BLACK));
            Print(L"[aiBIOS Agency] Stability Check Failed! Triggering autonomous Self-Healing (ECO Mode)...\n");
-           InitializeAgentPlan(INTENT_ECO, &gActivePlan);
+           InitializeAgentPlan(INTENT_ECO, 0, &gActivePlan);
            while (gActivePlan.IsActive) {
              StepAgentPlan(&gActivePlan);
            }

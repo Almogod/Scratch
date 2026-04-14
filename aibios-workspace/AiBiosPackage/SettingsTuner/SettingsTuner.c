@@ -5,6 +5,7 @@
 #include "SettingsTuner.h"
 
 STATIC USER_INTENT gActiveIntent = INTENT_UNKNOWN;
+STATIC INT32       gSimulatedFanSpeed = 1200; // Default simulated speed
 
 USER_INTENT
 EFIAPI
@@ -99,4 +100,28 @@ ApplyProfile (
 
   gActiveIntent = Intent; // Track state
   return EFI_SUCCESS;
+}
+
+EFI_STATUS
+TuneHardwareParameter (
+  IN UINT32  Type,
+  IN INT32   Value
+  )
+{
+  if (Type == 1) { // FAN
+     DEBUG ((DEBUG_INFO, "[aiBIOS] Tuning Hardware: Fan Speed -> %d RPM\n", Value));
+     gSimulatedFanSpeed = Value;
+     Print (L"  [HARDWARE] PWM Controller duty cycle adjusted. Fan target: %d RPM [SUCCESS]\n", Value);
+     return EFI_SUCCESS;
+  }
+  
+  return EFI_UNSUPPORTED;
+}
+
+INT32
+GetSimulatedFanSpeed (
+  VOID
+  )
+{
+  return gSimulatedFanSpeed;
 }

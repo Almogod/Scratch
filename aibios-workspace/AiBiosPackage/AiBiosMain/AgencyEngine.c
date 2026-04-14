@@ -11,6 +11,7 @@ EFI_STATUS ScanAndCleanVariables (OUT UINT32 *CleanedCount); // Forward decl
 EFI_STATUS
 InitializeAgentPlan (
   IN  USER_INTENT  Intent,
+  IN  INT32        Parameter,
   OUT AGENT_PLAN   *Plan
   )
 {
@@ -52,6 +53,17 @@ InitializeAgentPlan (
       
       Plan->Tasks[2].Type = TASK_VERIFY_TELEMETRY;
       StrCpyS(Plan->Tasks[2].Description, 64, L"Post-stress recovery verification");
+      break;
+      
+    case INTENT_FAN_TUNING:
+      Plan->TotalTasks = 2;
+      Plan->Tasks[0].Type = TASK_HARDWARE_TUNE;
+      Plan->Tasks[0].Parameter = Parameter;
+      Plan->Tasks[0].RelatedIntent = Intent;
+      UnicodeSPrint(Plan->Tasks[0].Description, 128, L"Tuning fan speed to %d RPM", Parameter);
+
+      Plan->Tasks[1].Type = TASK_VERIFY_TELEMETRY;
+      StrCpyS(Plan->Tasks[1].Description, 64, L"Verifying acoustic/thermal stable");
       break;
 
     default:
@@ -96,6 +108,18 @@ StepAgentPlan (
   switch (Current->Type) {
     case TASK_APPLY_PROFILE:
       Status = ApplyProfile(Current->RelatedIntent);
+      if (!EFI_ERROR(Status)) {
+        Current->Status = TASK_STATUS_SUCCESS;
+        Plan->CurrentTaskIdx++;
+      } else {
+        Current->Status = TASK_STATUS_FAILED;
+        Plan->IsActive = FALSE;
+      }
+      break;
+
+    case TASK_HARDWARE_TUNE:
+      Print(L"  - Executing Hardware Tuning: Type 1 (Fan), Value %d\n", Current->Parameter);
+      Status = TuneHardwareParameter(1, Current->Parameter);
       if (!EFI_ERROR(Status)) {
         Current->Status = TASK_STATUS_SUCCESS;
         Plan->CurrentTaskIdx++;

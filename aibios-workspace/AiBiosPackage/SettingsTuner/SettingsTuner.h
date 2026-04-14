@@ -49,9 +49,14 @@ SafeWriteMsr (
   );
 
 EFI_STATUS
-GetProfileByIntent (
-  IN  USER_INTENT      Intent,
-  OUT TUNING_PROFILE   **Profile
+TuneHardwareParameter (
+  IN UINT32  Type,
+  IN INT32   Value
+  );
+
+INT32
+GetSimulatedFanSpeed (
+  VOID
   );
 
 #endif // AIBIOS_SETTINGS_TUNER_H

@@ -11,7 +11,8 @@ typedef enum {
   TASK_SECURE_Grooming,
   TASK_THERMAL_STRESS_TEST,
   TASK_SSD_TRIM_OPTIMIZE,
-  TASK_EMERGENCY_HALT
+  TASK_EMERGENCY_HALT,
+  TASK_HARDWARE_TUNE
 } AGENT_TASK_TYPE;
 
 typedef enum {
@@ -27,6 +28,7 @@ typedef struct {
   AGENT_TASK_STATUS Status;
   USER_INTENT       RelatedIntent;
   UINT32            RetryCount;
+  INT32             Parameter;  // v1.1 - Values like RPM, Percentage, etc.
   CHAR16            Description[64];
 } AGENT_TASK;
 
@@ -43,6 +45,7 @@ typedef struct {
 EFI_STATUS
 InitializeAgentPlan (
   IN  USER_INTENT  Intent,
+  IN  INT32        Parameter,
   OUT AGENT_PLAN   *Plan
   );
 

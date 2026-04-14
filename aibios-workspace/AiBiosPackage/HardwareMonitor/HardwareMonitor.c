@@ -118,8 +118,8 @@ PollSensors (
   if (SimulatedTemp > 950) SimulatedTemp = 950;
 
   Latest->Temperature = (UINT16)SimulatedTemp;
-  Latest->FanRpm      = 1200 + (SimulatedTemp - 385) * 4;
-  Latest->CpuVoltage  = 1050;
+  Latest->FanRpm      = (UINT16)GetSimulatedFanSpeed();
+  Latest->CpuVoltage  = 1150 + (Latest->Temperature / 4); // 1.15V - 1.25V scaling
   Latest->SsdWearPct  = 2;
 
   return EFI_SUCCESS;
