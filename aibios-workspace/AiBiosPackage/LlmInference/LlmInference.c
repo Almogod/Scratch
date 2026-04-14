@@ -95,6 +95,54 @@ SaturatedAdd (
 }
 
 STATIC VOID
+ApplyPositionalEncoding (
+  IN OUT QUANTIZED_VECTOR  *Hidden,
+  IN     UINT32             Pos
+  )
+{
+  UINT32 d;
+  // Sinusoidal approximation using a simple sawtooth pattern of varying frequencies
+  for (d = 0; d < EMBEDDING_DIM; d++) {
+    // Frequencies: Higher dims = lower frequency
+    UINT32 Freq = (d / 64) + 1;
+    INT8 SinVal = (INT8)(((Pos * 64 / Freq) % 256) - 128); // Simulated wave
+    Hidden->Data[d] = SaturatedAdd(Hidden->Data[d], SinVal / 4);
+  }
+}
+
+STATIC VOID
+QuantizedSoftmax (
+  IN OUT INT32  *Scores,
+  IN     UINT32  Len
+  )
+{
+  UINT32 i;
+  INT32 Max = -2147483647;
+  INT32 Sum = 0;
+
+  for (i = 0; i < Len; i++) if (Scores[i] > Max) Max = Scores[i];
+
+  // Exp approximation and normalization
+  for (i = 0; i < Len; i++) {
+    INT32 Diff = (Max - Scores[i]);
+    // 1 / (1 + x) approx for softmax-like dampening
+    if (Diff > 1000) Scores[i] = 0;
+    else if (Diff > 500) Scores[i] = 1;
+    else if (Diff > 100) Scores[i] = 4;
+    else Scores[i] = 16;
+    
+    Sum += Scores[i];
+  }
+
+  if (Sum == 0) return;
+  
+  // Re-scale into fixed-point probability (total 256)
+  for (i = 0; i < Len; i++) {
+    Scores[i] = (Scores[i] * 256) / Sum;
+  }
+}
+
+STATIC VOID
 MultiHeadAttention (
   IN OUT QUANTIZED_VECTOR  *X,
   IN     UINT32             LayerIdx,
@@ -102,41 +150,47 @@ MultiHeadAttention (
   )
 {
   UINT32 pos, d;
-  INT32  Score;
+  INT32  Scores[16]; // Only attend to first 16 tokens for speed
   STATIC INT32 AttnOut[EMBEDDING_DIM];
+  UINT32 MaxCtx = (SeqLen < 16) ? SeqLen : 16;
 
   if (SeqLen > KV_CACHE_SIZE || LayerIdx >= NUM_LAYERS || X == NULL) {
     return;
   }
   
   // 1. Update KV Cache for current position (simplified: Q=K=V=X)
-  CopyMem(&gKvCache[LayerIdx][0][0].Data, X->Data, EMBEDDING_DIM); // K
-  CopyMem(&gKvCache[LayerIdx][0][1].Data, X->Data, EMBEDDING_DIM); // V
+  // For this pass, we store the current hidden state in the first slot
+  CopyMem(&gKvCache[LayerIdx][0][0].Data, X->Data, EMBEDDING_DIM); 
+  CopyMem(&gKvCache[LayerIdx][0][1].Data, X->Data, EMBEDDING_DIM); 
 
-  // 2. Compute Dot-Product Attention over the cache
-  ZeroMem(AttnOut, sizeof(AttnOut));
-
-  // We simulate attending to the first few tokens of the prompt 
-  for (pos = 0; pos < SeqLen && pos < 16; pos++) {
-    Score = 0;
+  // 2. Compute Dot-Product Attention Scores
+  for (pos = 0; pos < MaxCtx; pos++) {
+    Scores[pos] = 0;
     for (d = 0; d < EMBEDDING_DIM; d++) {
-      Score += (INT32)X->Data[d] * (INT32)gKvCache[LayerIdx][pos][0].Data[d];
+      Scores[pos] += (INT32)X->Data[d] * (INT32)gKvCache[LayerIdx][pos][0].Data[d];
     }
-    
-    // Softmax-like weighted sum (simplified for INT8/UEFI)
-    if (Score > 1000) {
+    Scores[pos] /= 100; // Temperature scaling
+  }
+
+  // 3. Apply Softmax to Scores
+  QuantizedSoftmax(Scores, MaxCtx);
+
+  // 4. Weighted Sum of Values
+  ZeroMem(AttnOut, sizeof(AttnOut));
+  for (pos = 0; pos < MaxCtx; pos++) {
+    if (Scores[pos] > 0) {
       for (d = 0; d < EMBEDDING_DIM; d++) {
-        AttnOut[d] += (INT32)gKvCache[LayerIdx][pos][1].Data[d];
+        AttnOut[d] += (INT32)gKvCache[LayerIdx][pos][1].Data[d] * Scores[pos];
       }
     }
   }
 
-  // 3. Residual connection and saturation back to X
+  // 5. Residual connection and saturation back to X
   for (d = 0; d < EMBEDDING_DIM; d++) {
-    X->Data[d] = SaturatedAdd(X->Data[d], (INT8)(AttnOut[d] / 16));
+    X->Data[d] = SaturatedAdd(X->Data[d], (INT8)(AttnOut[d] / 4096)); // Scale back from 256*sum
   }
 
-  DEBUG ((DEBUG_VERBOSE, "[aiBIOS] Layer %d Attention pass complete\n", LayerIdx));
+  DEBUG ((DEBUG_VERBOSE, "[aiBIOS] Layer %d Attention pass complete (Softmax Active)\n", LayerIdx));
 }
 
 STATIC USER_INTENT
@@ -272,11 +326,11 @@ LlmInferenceRun (
       continue;
     }
 
-    // Normal weight XOR (for real weights or non-control mock tokens)
-    // Actually, switch to summation for normal path too in future
+    // Normalize and add Positional Embedding
     for (j = 0; j < EMBEDDING_DIM; j++) {
       gHiddenState.Data[j] = SaturatedAdd(gHiddenState.Data[j], (INT8)gModelWeights[(WeightOffset + j) % sizeof(gModelWeights)]);
     }
+    ApplyPositionalEncoding(&gHiddenState, (UINT32)i);
   }
 
   DEBUG ((DEBUG_INFO, "[aiBIOS] Starting Inference: %d tokens, %d layers\n", TokenCount, NUM_LAYERS));

@@ -192,3 +192,26 @@ VerifyHardwareState (
 
   return EFI_SUCCESS;
 }
+
+BOOLEAN
+IsThermalCritical (
+  IN  CONST SENSOR_RING  *History,
+  OUT INT16              *Confidence
+  )
+{
+  INT32 Delta;
+  PredictThermalTrend(History, &Delta);
+
+  if (History->Count < 10) return FALSE;
+
+  // Confidence is 0-100 based on history consistency (simulated)
+  *Confidence = 85; 
+
+  // If projected temperature > 100C (1000) or Delta > 5.0C per poll
+  SENSOR_SAMPLE Latest = History->Samples[(History->Head + SENSOR_HISTORY_LEN - 1) % SENSOR_HISTORY_LEN];
+  if (Latest.Temperature + Delta > 950 || Delta > 40) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
